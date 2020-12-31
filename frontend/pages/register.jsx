@@ -8,6 +8,8 @@ import { UserContext } from '../context/userContext';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
+
 const register = () => {
 	const router = useRouter();
 	const [values, handleChange] = useForm({
@@ -67,7 +69,11 @@ const register = () => {
 			<main className='col-span-3'>
 				<div className='flex items-center justify-center w-full h-full'>
 					<FormBody handler={handleSubmit}>
-						<Image src='/logo-default.png' height={123} width={260} />
+						<Link href='/'>
+							<a>
+								<Image src='/logo.svg' height={123} width={260} />
+							</a>
+						</Link>
 						<h1 className='text-xl text-gray-700 font-bold'>
 							Registrar Una Cuenta Nueva
 						</h1>

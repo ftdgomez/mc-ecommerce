@@ -6,13 +6,13 @@ module.exports = {
     
     extend: {
       colors: {
-       primary: '#6875f5',
-        secondary: '#42389d'
+       primary: '#2193d0',
+        secondary: '#156da6'
       }
     },
   },
   variants: {
     extend: {},
   },
-  plugins: [],
+  plugins: [require('@tailwindcss/forms')],
 }

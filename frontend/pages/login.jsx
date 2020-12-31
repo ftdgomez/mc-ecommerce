@@ -8,6 +8,7 @@ import { useForm } from '../hooks/useForm';
 import { UserContext } from '../context/userContext';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import Link from 'next/link';
 
 const login = () => {
 	const router = useRouter();
@@ -57,7 +58,11 @@ const login = () => {
 			<main className='col-span-3'>
 				<div className='flex items-center justify-center w-full h-full'>
 					<FormBody handler={handleSubmit}>
-						<Image src='/logo-default.png' height={123} width={260} />
+						<Link href='/'>
+							<a>
+								<Image src='/logo.svg' height={123} width={260} />
+							</a>
+						</Link>
 						<h1 className='text-xl text-gray-700 font-bold'>¡Hola de nuevo!</h1>
 						<p className='mb-4 text-gray-500 text-sm'>
 							¿No tienes una cuenta?{' '}
