@@ -56,7 +56,7 @@ export default function Home() {
 						</div>
 					</div>
 				</div>
-				<main className='m-4 md:container md:grid grid-cols-12 gap-4'>
+				<main className='m-4 md:mx-auto md:container md:grid grid-cols-12 gap-4'>
 					<div className='col-span-3 bg-white p-4 border rounded mb-4 md:mb-0'>
 						<h2 className='font-bold text-lg pb-2 border-b'>Categorías</h2>
 						<Link href='/'>
