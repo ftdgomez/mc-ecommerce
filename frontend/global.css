@@ -19,7 +19,7 @@
 
 @layer components {
 	.container {
-		@apply max-w-5xl mx-auto py-4 px-8;
+		@apply max-w-5xl mx-auto py-4 px-8 !important;
 	}
 	.container-xl {
 		@apply max-w-7xl mx-auto py-4 px-8;
