@@ -27,7 +27,7 @@ const checkout = () => {
 							<h2 className='ml-2 text-2xl font-bold'>Datos De Cliente</h2>
 						</header>
 						{!userInfo && (
-							<div className='p-4 pl-12'>
+							<div className='md:p-4 md:pl-12'>
 								<p className='tex-sm mb-4'>
 									¿Mirando la tienda como <b>Invitado</b>? Tendrás la
 									posibilidad de guardar tus detalles de cliente para crear una
@@ -57,7 +57,7 @@ const checkout = () => {
 						)}
 					</section>
 					<section>
-						<header className='flex items-center border-b rounded p-4'>
+						<header className='flex items-center border-b rounded md:p-4'>
 							<span className='bg-gray-700 text-white h-10 w-10 flex items-center justify-center rounded-full'>
 								2
 							</span>
@@ -65,7 +65,7 @@ const checkout = () => {
 						</header>
 					</section>
 					<section>
-						<header className='flex items-center border-b rounded p-4'>
+						<header className='flex items-center border-b rounded md:p-4'>
 							<span className='bg-gray-700 text-white h-10 w-10 flex items-center justify-center rounded-full'>
 								3
 							</span>

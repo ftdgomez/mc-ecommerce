@@ -13,14 +13,14 @@ export const ProductCard = ({ product, badge }) => {
 		}
 	};
 	return (
-		<div>
+		<div className='mb-4'>
 			<Link href={href}>
 				<a>
 					<div
 						style={{
 							backgroundImage: `url(/temp/${pic})`,
 						}}
-						className='mb-4 md:mb-0 border rounded bg-cover bg-center h-48 w-full flex flex-col items-end translate-y-0 hover:translate-y-2'>
+						className='mb-0 border rounded bg-cover bg-center h-48 w-full flex flex-col items-end translate-y-0 hover:translate-y-2'>
 						{badge && (
 							<span className='self-start px-2 m-4 font-bold py bg-primary text-white text-xs rounded-full'>
 								{badge}
@@ -30,7 +30,7 @@ export const ProductCard = ({ product, badge }) => {
 				</a>
 			</Link>
 
-			<div className='p-2 border-t bg-white w-full mt-auto'>
+			<div className='p-2 bg-white w-full mt-auto'>
 				<Link href={href}>
 					<a>
 						<h4 className='text-sm font-medium text-gray-600'>{title}</h4>
