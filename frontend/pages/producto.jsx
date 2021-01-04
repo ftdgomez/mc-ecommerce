@@ -72,12 +72,7 @@ const producto = () => {
 				</h2>
 				<div className='md:grid grid-cols-3 gap-4'>
 					{productList.slice(0, 3).map((item) => (
-						<ProductCard
-							badge='Destacado'
-							title={item.name}
-							pic={item.pic}
-							price={item.price}
-						/>
+						<ProductCard badge='Destacado' product={item} />
 					))}
 				</div>
 			</article>

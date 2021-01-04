@@ -18,6 +18,7 @@ export default function Home() {
 		autoPlay: true,
 	};
 	const { productList } = useContext(ProductsContext);
+
 	return (
 		<div>
 			<MainLayout>
@@ -118,11 +119,7 @@ export default function Home() {
 					</div>
 					<div className='col-span-9 md:grid grid-cols-3 gap-4'>
 						{productList.map((item) => (
-							<ProductCard
-								title={item.name}
-								pic={item.pic}
-								price={item.price}
-							/>
+							<ProductCard key={item._id} product={item} />
 						))}
 					</div>
 				</main>

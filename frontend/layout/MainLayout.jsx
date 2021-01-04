@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import Link from 'next/link';
 import { CartSideBar } from '../components/CartSideBar';
 import Head from 'next/head';
+import { ProductsContext } from '../context/ProductsContext';
 
 export const MainLayout = ({ children }) => {
-	const [showCart, setShowCart] = useState(false);
 	const [showNavBar, setShowNavBar] = useState(false);
-
+	const { productCart, setProductCart, showCart, setShowCart } = useContext(
+		ProductsContext
+	);
 	const Links = [
 		{
 			href: '/',
@@ -29,10 +31,15 @@ export const MainLayout = ({ children }) => {
 			text: 'Contacto',
 		}, */
 	];
-
+	useEffect(() => {
+		if (localStorage.getItem('productCart')) {
+			setProductCart(JSON.parse(localStorage.getItem('productCart')));
+		}
+		console.log('cart updated');
+	}, []);
 	return (
 		<div
-			className={`${showCart && 'overflow-y-hidden h-screen'} ${
+			className={`${showCart && 'overflow-y-hidden'} ${
 				showNavBar && 'overflow-y-hidden h-screen'
 			}`}>
 			<Head>
@@ -66,7 +73,7 @@ export const MainLayout = ({ children }) => {
 								<button
 									type='button'
 									className='text-gray-500 hover:text-gray-600 focus:outline-none focus:text-gray-600'
-									ariaLabel='toggle menu'>
+									aria-label='toggle menu'>
 									<svg viewBox='0 0 24 24' className='h-6 w-6 fill-current'>
 										<path
 											fillRule='evenodd'
@@ -114,7 +121,7 @@ export const MainLayout = ({ children }) => {
 										/>
 									</svg>
 									<span className='block rounded-full bg-indigo-500 text-white p-1 text-xs'>
-										10
+										{productCart.length}
 									</span>
 								</button>
 							</div>
@@ -123,7 +130,9 @@ export const MainLayout = ({ children }) => {
 				</nav>
 			</header>
 			{showCart && <CartSideBar handler={setShowCart} showCart={showCart} />}
+			{/* BODY */}
 			<main className='bg-gray-100 pt pb-8'>{children}</main>
+			{/* END BODY */}
 			<footer className='container-xl md:grid grid-cols-3 bg-white py-8 border-t'>
 				<div>
 					<p className='text-center md:text-left'>

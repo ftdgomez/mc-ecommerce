@@ -22,12 +22,7 @@ const productos = () => {
 			</header>
 			<article className='container md:grid grid-cols-3 gap-4'>
 				{productList.slice(0, 3).map((item) => (
-					<ProductCard
-						badge='Destacado'
-						title={item.name}
-						pic={item.pic}
-						price={item.price}
-					/>
+					<ProductCard badge='Destacado' product={item} />
 				))}
 			</article>
 			<aside className='container'>
@@ -114,7 +109,7 @@ const productos = () => {
 				</div>
 				<div className='col-span-9 md:grid grid-cols-3 gap-4'>
 					{productList.map((item) => (
-						<ProductCard title={item.name} pic={item.pic} price={item.price} />
+						<ProductCard product={item} />
 					))}
 				</div>
 			</main>
@@ -123,7 +118,7 @@ const productos = () => {
 				<div>
 					<nav
 						className='relative z-0 inline-flex shadow-sm -space-x-px'
-						ariaLabel='Pagination'>
+						aria-label='Pagination'>
 						<a
 							href='#'
 							className='relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50'>
@@ -133,7 +128,7 @@ const productos = () => {
 								xmlns='http://www.w3.org/2000/svg'
 								viewBox='0 0 20 20'
 								fill='currentColor'
-								ariaHidden='true'>
+								aria-hidden='true'>
 								<path
 									fill-rule='evenodd'
 									d='M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z'

@@ -1,24 +1,34 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Link from 'next/link';
+import { ProductsContext } from '../context/ProductsContext';
 
-export const ProductCard = ({
-	title,
-	pic,
-	href = '/producto',
-	price,
-	badge,
-}) => {
+export const ProductCard = ({ product, badge }) => {
+	const { pic, title, price, href } = product;
+	const { addToCart, setShowCart } = useContext(ProductsContext);
+
+	const handleAddToCart = (product) => {
+		const added = addToCart({ ...product, qty: 1 });
+		if (added) {
+			setShowCart(true);
+		}
+	};
 	return (
-		<div
-			style={{
-				backgroundImage: `url(/temp/${pic})`,
-			}}
-			className='mb-4 md:mb-0 border rounded bg-contain bg-no-repeat bg-top h-72 w-full flex flex-col items-end justify-center translate-y-0 hover:translate-y-2'>
-			{badge && (
-				<span className='self-start px-2 m-4 font-bold py bg-primary text-white text-xs rounded-full'>
-					{badge}
-				</span>
-			)}
+		<div>
+			<Link href={href}>
+				<a>
+					<div
+						style={{
+							backgroundImage: `url(/temp/${pic})`,
+						}}
+						className='mb-4 md:mb-0 border rounded bg-cover bg-center h-48 w-full flex flex-col items-end translate-y-0 hover:translate-y-2'>
+						{badge && (
+							<span className='self-start px-2 m-4 font-bold py bg-primary text-white text-xs rounded-full'>
+								{badge}
+							</span>
+						)}
+					</div>
+				</a>
+			</Link>
 
 			<div className='p-2 border-t bg-white w-full mt-auto'>
 				<Link href={href}>
@@ -30,7 +40,9 @@ export const ProductCard = ({
 					<p className='text-gray-600 text-sm font-bold'>${price}</p>
 				</div>
 				<div className='flex justify-between w-full items-center mt-4'>
-					<button className='bg-white text-sm px-4 py-2 text-gray-800 rounded shadow flex items-center hover:bg-primary hover:text-white '>
+					<button
+						onClick={() => handleAddToCart(product)}
+						className='bg-white text-sm px-4 py-2 text-gray-800 rounded shadow flex items-center hover:bg-primary hover:text-white '>
 						<svg
 							className='h-4 mr-2'
 							xmlns='http://www.w3.org/2000/svg'

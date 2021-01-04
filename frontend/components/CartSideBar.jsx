@@ -1,16 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import Link from 'next/link';
-const ProductItem = () => {
-	const [count, setCount] = useState(1);
+import { ProductsContext } from '../context/ProductsContext';
 
+const ProductItem = ({ product, handleDelete }) => {
+	const { productCart, setProductCart } = useContext(ProductsContext);
+	const [count, setCount] = useState(() => {
+		return product.qty ? product.qty : 1;
+	});
+	const { title, price, pic } = product;
+	const handleProductQtyChange = (qty, product) => {
+		setCount(qty);
+		const productListUpdated = productCart.map((p) =>
+			p._id === product._id ? { ...p, ['qty']: qty } : p
+		);
+		setProductCart(productListUpdated);
+		localStorage.setItem('productCart', JSON.stringify(productListUpdated));
+	};
 	return (
 		<li className='grid grid-cols-4 gap-4 border m-4 bg-white shadow'>
-			<img src='/placeholder.jpg' className='h-20 w-20' alt='' />
+			<div
+				style={{ backgroundImage: `url(/temp/${pic})` }}
+				className='h-20 w-20 bg-cover bg-center'></div>
 			<p className='col-span-2 grid grid-rows-2'>
-				<h4 className='font-bold text-sm'>Título de producto en carrito</h4>
+				<h4 className='font-bold text-sm overflow-hidden h-10'>{title}</h4>
 				<div className='grid grid-cols-3 items-center w-20 text-center'>
 					<button
-						onClick={() => count > 1 && setCount(count - 1)}
+						onClick={() =>
+							count > 1 && handleProductQtyChange(count - 1, product)
+						}
 						className='border rounded px-2 p'>
 						-
 					</button>
@@ -18,25 +35,29 @@ const ProductItem = () => {
 						className='text-center border border-gray-200 p-0'
 						type='text'
 						value={count}
-						onChange={(e) => setCount(e.target.value)}
+						onChange={(e) => handleProductQtyChange(count, product)}
 					/>
 					<button
-						onClick={() => setCount(count + 1)}
+						onClick={() => handleProductQtyChange(count + 1, product)}
 						className='border rounded px-2 p'>
 						+
 					</button>
 				</div>
 			</p>
-			<div class='flex flex-col justify-between space-y-2 p-2 border-l'>
-				<p>$80.00</p>
-				<button class='flex justify-end'>
+			<div class='flex flex-col justify-between space-y-2 border-l'>
+				<p className='text-right font-bold border-b p-2'>
+					${price} {count > 1 && `x ${count}`}
+				</p>
+				<button
+					class='flex item-center h-full justify-end px-2'
+					onClick={() => handleDelete(product)}>
 					<svg
 						width='24'
 						height='24'
 						viewBox='0 0 24 24'
 						fill='none'
 						xmlns='http://www.w3.org/2000/svg'
-						className='text-red-600'>
+						className='text-red-600 h-5 w-5 block'>
 						<path
 							d='M3 6H21'
 							stroke='currentColor'
@@ -68,12 +89,26 @@ const ProductItem = () => {
 	);
 };
 
-export const CartSideBar = ({ showCart, handler }) => {
+export const CartSideBar = ({ showCart, handler, embedded }) => {
+	const { productCart, removeFromCart } = useContext(ProductsContext);
+
 	return (
-		<div className='flex w-full max-h-screen'>
-			<div className='h-screen bg-black opacity-70 absolute top-0 left-0 w-full z-10'></div>
-			<div className='h-screen bg-gray-100 w-full grid grid-rows-8 md:w-96 md:ml-auto z-20 fixed top-0 right-0'>
-				<header className='flex justify-between items-center px-4 border-b p-6 bg-white'>
+		<div className={embedded ? undefined : 'flex w-full max-h-screen'}>
+			{!embedded && (
+				<div className='h-screen bg-black opacity-70 fixed top-0 left-0 w-full z-10'></div>
+			)}
+			<div
+				className={
+					embedded
+						? 'border p-4 rounded bg-white'
+						: 'h-screen bg-gray-100 w-full grid grid-rows-8 md:w-96 md:ml-auto z-20 fixed top-0 right-0'
+				}>
+				<header
+					className={
+						embedded
+							? 'hidden'
+							: 'flex justify-between items-center px-4 border-b p-6 bg-white h-20'
+					}>
 					<button
 						className='text-gray-700 border px-4 py-2 rounded'
 						onClick={() => handler(!showCart)}>
@@ -97,23 +132,35 @@ export const CartSideBar = ({ showCart, handler }) => {
 								/>
 							</svg>
 							<span className='block rounded-full bg-indigo-500 text-white p-1 text-xs'>
-								10
+								{productCart.length}
 							</span>
 						</button>
 					</div>
 				</header>
-				<div className='row-span-3 overflow-auto'>
-					<ProductItem />
-					<ProductItem />
-					<ProductItem />
-					<ProductItem />
-					<ProductItem />
-					<ProductItem />
-					<ProductItem />
-					<ProductItem />
+				{embedded && <h2>Detalles de su compra:</h2>}
+				<div className='row-span-4 overflow-auto'>
+					{productCart.length < 1 ? (
+						<p className='text-center p-4'>
+							<svg
+								xmlns='http://www.w3.org/2000/svg'
+								width='24'
+								height='24'
+								viewBox='0 0 24 24'
+								fill='currentColor'
+								className='mx-auto h-20 w-20'>
+								<path d='M13.299 3.74c-.207-.206-.299-.461-.299-.711 0-.524.407-1.029 1.02-1.029.262 0 .522.1.721.298l3.783 3.783c-.771.117-1.5.363-2.158.726l-3.067-3.067zm3.92 14.84l-.571 1.42h-9.296l-3.597-8.961-.016-.039h9.441c.171-.721.459-1.395.848-2h-14.028v2h.643c.535 0 1.021.304 1.256.784l4.101 10.216h12l1.21-3.015c-.698-.03-1.367-.171-1.991-.405zm-6.518-14.84c.207-.206.299-.461.299-.711 0-.524-.407-1.029-1.02-1.029-.261 0-.522.1-.72.298l-4.701 4.702h2.883l3.259-3.26zm13.299 8.76c0 2.485-2.017 4.5-4.5 4.5s-4.5-2.015-4.5-4.5 2.017-4.5 4.5-4.5 4.5 2.015 4.5 4.5zm-3.086-2.122l-1.414 1.414-1.414-1.414-.707.708 1.414 1.414-1.414 1.414.707.708 1.414-1.414 1.414 1.414.708-.708-1.414-1.414 1.414-1.414-.708-.708z' />
+							</svg>
+							<br />
+							No hay productos en su carrito.
+						</p>
+					) : (
+						productCart.map((p) => (
+							<ProductItem product={p} handleDelete={removeFromCart} />
+						))
+					)}
 				</div>
 				<div className='mt-auto bg-white'>
-					<div className='flex justify-between items-center border-t p-4'>
+					{/* 					<div className='flex justify-between items-center border-t p-4'>
 						<p className='font-bold'>Subtotal:</p>
 						<p className='font-bold'>100.00$</p>
 					</div>
@@ -121,18 +168,31 @@ export const CartSideBar = ({ showCart, handler }) => {
 						<p>Descuento:</p>
 						<p>Cupón: 5%</p>
 					</div>
-					<div className='flex justify-between items-center border-t p-4'>
-						<p className='font-bold'>Total:</p>
-						<p className='font-bold'>95.00$</p>
-					</div>
-
-					<div className='mx-4'>
-						<Link href='/register'>
-							<a className='bg-secondary px-8 py-4 text-white font-bold mt-auto mb-4 text-md text-center w-full block'>
-								Terminar Compra
-							</a>
-						</Link>
-					</div>
+ */}
+					{productCart.length > 0 && (
+						<div>
+							<div className='flex justify-between items-center border py-2 px-4 m-4'>
+								<p className='font-bold'>Total:</p>
+								<p className='font-bold border-l pl-4'>
+									$
+									{productCart.reduce(
+										(total, product) =>
+											total + Number(product.price) * Number(product.qty),
+										0
+									)}
+								</p>
+							</div>
+							{!embedded && (
+								<div className='mx-4'>
+									<Link href='/checkout'>
+										<a className='bg-secondary px-8 py-4 text-white font-bold mt-auto mb-4 text-md text-center w-full block'>
+											Terminar Compra
+										</a>
+									</Link>
+								</div>
+							)}
+						</div>
+					)}
 				</div>
 			</div>
 		</div>
