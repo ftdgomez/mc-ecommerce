@@ -7,11 +7,11 @@ const ProductItem = ({ product, handleDelete }) => {
 	const [count, setCount] = useState(() => {
 		return product.qty ? product.qty : 1;
 	});
-	const { title, price, pic } = product;
+	const { product_name, price, pictures } = product;
 	const handleProductQtyChange = (qty, product) => {
 		setCount(qty);
 		const productListUpdated = productCart.map((p) =>
-			p._id === product._id ? { ...p, ['qty']: qty } : p
+			p.id === product.id ? { ...p, ['qty']: qty } : p
 		);
 		setProductCart(productListUpdated);
 		localStorage.setItem('productCart', JSON.stringify(productListUpdated));
@@ -19,10 +19,10 @@ const ProductItem = ({ product, handleDelete }) => {
 	return (
 		<li className='grid grid-cols-4 gap-4 border m-4 bg-white shadow'>
 			<div
-				style={{ backgroundImage: `url(/temp/${pic})` }}
+				style={{ backgroundImage: `url(https://sass.refrigeracionmc.com/${pictures.split(',')[0]})` }}
 				className='h-20 w-20 bg-cover bg-center'></div>
 			<p className='col-span-2 grid grid-rows-2'>
-				<h4 className='font-bold text-sm overflow-hidden h-10'>{title}</h4>
+				<h4 className='font-bold text-sm capitalize overflow-hidden h-10'>{product_name}</h4>
 				<div className='grid grid-cols-3 items-center w-20 text-center'>
 					<button
 						onClick={() =>

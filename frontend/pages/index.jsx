@@ -4,10 +4,13 @@ import 'slick-carousel/slick/slick.css';
 import Link from 'next/link';
 import { Button } from '../components/Button';
 import { ProductCard } from '../components/ProductCard';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { ProductsContext } from '../context/ProductsContext';
+import { API_URL } from '../constant';
 
-export default function Home() {
+import axios from 'axios';
+
+export default function Home({ categories, products }) {
 	const settings = {
 		dots: false,
 		infinite: true,
@@ -17,7 +20,11 @@ export default function Home() {
 		arrows: false,
 		autoPlay: true,
 	};
-	const { productList } = useContext(ProductsContext);
+	const { productList, setProductList } = useContext(ProductsContext);
+
+	useEffect(()=>{
+		setProductList(products);
+	}, [])
 
 	return (
 		<div>
@@ -25,14 +32,14 @@ export default function Home() {
 				<div className='hover:cursor-move'>
 					<Slider {...settings}>
 						<div>
-							<img className='w-full' src='/car2.jpg' />
+							<img className='w-full' src='/01.jpg' />
 						</div>
-						<div>
+						{/* <div>
 							<img className='w-full' src='/car1.jpg' />
 						</div>
 						<div>
 							<img className='w-full' src='/car3.jpg' />
-						</div>
+						</div> */}
 					</Slider>
 				</div>
 				<div className='bg-gray-50'>
@@ -64,62 +71,19 @@ export default function Home() {
 								Todos los productos
 							</a>
 						</Link>
-						<Link href='/'>
-							<a className='text-gray-500 hover:text-gray-800 my-4 text-sm block'>
-								Gases refrigerantes
+						{
+							categories.map(c => (
+						<Link href={`/products?cat=${c.id}`} key={`cat-${c.id}`}>
+							<a className='text-gray-500 capitalize hover:text-gray-800 my-4 text-sm block'>
+						{c.category_name}
 							</a>
 						</Link>
-						<Link href='/'>
-							<a className='text-gray-500 hover:text-gray-800 my-4 text-sm block'>
-								Repuestos de refrigeración
-							</a>
-						</Link>
-						<Link href='/'>
-							<a className='text-gray-500 hover:text-gray-800 my-4 text-sm block'>
-								Productos y herramientas para refrigeración
-							</a>
-						</Link>
-						<Link href='/'>
-							<a className='text-gray-500 hover:text-gray-800 my-4 text-sm block'>
-								Productos para electrodomésticos
-							</a>
-						</Link>
-						<Link href='/'>
-							<a className='text-gray-500 hover:text-gray-800 my-4 text-sm block'>
-								Respuestos para electricidad
-							</a>
-						</Link>
-						<Link href='/'>
-							<a className='text-gray-500 hover:text-gray-800 my-4 text-sm block'>
-								Misceláneos
-							</a>
-						</Link>
-
-						<h2 className='font-bold text-md pb-2 border-b'>Sucursales</h2>
-						<Link href='/'>
-							<a className='text-gray-500 hover:text-gray-800 my-4 text-sm block'>
-								La Casanova
-							</a>
-						</Link>
-						<Link href='/'>
-							<a className='text-gray-500 hover:text-gray-800 my-4 text-sm block'>
-								La Candelaria
-							</a>
-						</Link>
-						<Link href='/'>
-							<a className='text-gray-500 hover:text-gray-800 my-4 text-sm block'>
-								Av. Fuerzas Armadas
-							</a>
-						</Link>
-						<Link href='/'>
-							<a className='text-gray-500 hover:text-gray-800 my-4 text-sm block'>
-								El Cementerio
-							</a>
-						</Link>
-					</div>
+							))
+						}
+										</div>
 					<div className='col-span-9 md:grid grid-cols-3 gap-4'>
-						{productList.map((item) => (
-							<ProductCard key={item._id} product={item} />
+						{productList.slice(0, 9).map((item) => (
+							<ProductCard key={item.id} product={item} />
 						))}
 					</div>
 				</main>
@@ -131,7 +95,7 @@ export default function Home() {
 							<span className='block text-primary'>Métodos de pago</span>
 						</h2>
 						<div className='mt-8 lex lg:mt-0 lg:flex-shrink-0'>
-							<div className='grid grid-cols-2 md:grid-cols-5 gap-4 items-center justify-items-center'>
+							<div className='grid grid-cols-2 md:grid-cols-4 gap-4 items-center justify-items-center'>
 								<div className='flex justify-center flex-col items-center text-center'>
 									<img className='h-8' src='/zelle.png' />
 									<h4 className='text-gray-600'>Zelle</h4>
@@ -148,17 +112,19 @@ export default function Home() {
 									<img className='h-6' src='/paypal.png' />
 									<h4 className='text-gray-600'>Paypal</h4>
 								</div>
-								<div className='flex justify-center flex-col items-center text-center'>
+								{/* <div className='flex justify-center flex-col items-center text-center'>
 									<img className='h-8' src='/tarjeta.png' />
 									<h4 className='text-gray-600'>Tarjeta Extranjera</h4>
-								</div>
+								</div> */}
 							</div>
 						</div>
 					</div>
 				</section>
+{/* 
 				<section>
 					<img src='/car2.jpg' className='w-full' />
-				</section>
+				</section> */}
+
 				<section className='bg-secondary py-4'>
 					<div>
 						<div className='container'>
@@ -186,7 +152,7 @@ export default function Home() {
 					</div>
 				</section>
 
-				<section className='md:grid grid-cols-3 gap-4 container' id='blog'>
+				{/* <section className='md:grid grid-cols-3 gap-4 container' id='blog'>
 					<div className='bg-white border rounded'>
 						<div
 							style={{ backgroundImage: 'url(/placeholder.jpg)' }}
@@ -241,7 +207,7 @@ export default function Home() {
 							</Button>
 						</div>
 					</div>
-				</section>
+				</section> */}
 
 				<section className='container'>
 					<h2 className='text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl text-center mb-8'>
@@ -258,3 +224,21 @@ export default function Home() {
 		</div>
 	);
 }
+
+export async function getServerSideProps(context) {
+	const catResponse = await axios.get(API_URL + 'products/categories')
+	const categories = catResponse.data;
+	const query = context.query
+	const productsURL = `${API_URL}ecommerce/allproducts?page=1`
+	const productsResponse = await axios.get(productsURL)
+	const products = productsResponse.data.filter(i => i.avaible_online);
+	console.log(context)
+	console.log('Se fetechearon ', products.length, ' productos.')
+	return {
+		props: {
+			categories,
+			products
+		}
+	}
+}
+

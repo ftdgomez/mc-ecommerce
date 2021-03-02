@@ -1,12 +1,10 @@
-import React, { useContext } from 'react';
-import { ProductsContext } from '../context/ProductsContext';
 import { MainLayout } from '../layout/MainLayout';
 import Link from 'next/link';
 import { ProductCard } from '../components/ProductCard';
+import axios from 'axios';
+import { API_URL } from '../constant';
 
-const productos = () => {
-	const { productList } = useContext(ProductsContext);
-
+const productos = ({ categories, products, currentPage}) => {
 	return (
 		<MainLayout>
 			<header>
@@ -21,8 +19,8 @@ const productos = () => {
 				</div>
 			</header>
 			<article className='container md:grid grid-cols-3 gap-4'>
-				{productList.slice(0, 3).map((item) => (
-					<ProductCard badge='Destacado' product={item} />
+				{products.slice(0, 3).map((item) => (
+					<ProductCard badge='Destacado' product={item} key={item.id}/>
 				))}
 			</article>
 			<aside className='container'>
@@ -46,81 +44,38 @@ const productos = () => {
 				</form>
 			</aside>
 
-			<main className='container md:grid grid-cols-12 gap-4'>
-				<div className='col-span-3 bg-white p-4 border rounded'>
-					<h2 className='font-bold text-lg pb-2 border-b'>Categorías</h2>
-					<Link href='/'>
-						<a className='text-gray-500 hover:text-gray-800 my-4 text-sm block'>
-							Todos los productos
-						</a>
-					</Link>
-					<Link href='/'>
-						<a className='text-gray-500 hover:text-gray-800 my-4 text-sm block'>
-							Gases refrigerantes
-						</a>
-					</Link>
-					<Link href='/'>
-						<a className='text-gray-500 hover:text-gray-800 my-4 text-sm block'>
-							Repuestos de refrigeración
-						</a>
-					</Link>
-					<Link href='/'>
-						<a className='text-gray-500 hover:text-gray-800 my-4 text-sm block'>
-							Productos y herramientas para refrigeración
-						</a>
-					</Link>
-					<Link href='/'>
-						<a className='text-gray-500 hover:text-gray-800 my-4 text-sm block'>
-							Productos para electrodomésticos
-						</a>
-					</Link>
-					<Link href='/'>
-						<a className='text-gray-500 hover:text-gray-800 my-4 text-sm block'>
-							Respuestos para electricidad
-						</a>
-					</Link>
-					<Link href='/'>
-						<a className='text-gray-500 hover:text-gray-800 my-4 text-sm block'>
-							Misceláneos
-						</a>
-					</Link>
-
-					<h2 className='font-bold text-md pb-2 border-b'>Sucursales</h2>
-					<Link href='/'>
-						<a className='text-gray-500 hover:text-gray-800 my-4 text-sm block'>
-							La Casanova
-						</a>
-					</Link>
-					<Link href='/'>
-						<a className='text-gray-500 hover:text-gray-800 my-4 text-sm block'>
-							La Candelaria
-						</a>
-					</Link>
-					<Link href='/'>
-						<a className='text-gray-500 hover:text-gray-800 my-4 text-sm block'>
-							Av. Fuerzas Armadas
-						</a>
-					</Link>
-					<Link href='/'>
-						<a className='text-gray-500 hover:text-gray-800 my-4 text-sm block'>
-							El Cementerio
-						</a>
-					</Link>
-				</div>
-				<div className='col-span-9 md:grid grid-cols-3 gap-4'>
-					{productList.map((item) => (
-						<ProductCard product={item} />
-					))}
-				</div>
-			</main>
+					<main className='m-4 container md:grid grid-cols-12 gap-4'>
+					<div className='col-span-3 bg-white p-4 border rounded mb-4 md:mb-0'>
+						<h2 className='font-bold text-lg pb-2 border-b'>Categorías</h2>
+						<Link href='/'>
+							<a className='text-gray-500 hover:text-gray-800 my-4 text-sm block'>
+								Todos los productos
+							</a>
+						</Link>
+						{
+							categories.map(c => (
+						<Link href={`/products?cat=${c.id}`} key={`cat-${c.id}`}>
+							<a className='text-gray-500 capitalize hover:text-gray-800 my-4 text-sm block'>
+						{c.category_name}
+							</a>
+						</Link>
+							))
+						}
+										</div>
+					<div className='col-span-9 md:grid grid-cols-3 gap-4'>
+						{products.slice(3, 12).map((item) => (
+							<ProductCard key={item.id} product={item} />
+						))}
+					</div>
+				</main>
 			<footer className='md:flex justify-between items-center bg-white container border rounded'>
-				<p>Mostrando 1 de 12 páginas</p>
+				<p></p>
 				<div>
 					<nav
 						className='relative z-0 inline-flex shadow-sm -space-x-px'
 						aria-label='Pagination'>
 						<a
-							href='#'
+							href={`/productos/?page=${currentPage === 1 ? 1 : currentPage - 1}`} 
 							className='relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50'>
 							<span className='sr-only'>Previous</span>
 							<svg
@@ -141,7 +96,7 @@ const productos = () => {
 							...
 						</span>
 						<a
-							href='#'
+							href={`/productos/?page=${currentPage + 1}`} 
 							className='relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50'>
 							<span className='sr-only'>Next</span>
 							<svg
@@ -163,5 +118,23 @@ const productos = () => {
 		</MainLayout>
 	);
 };
+
+export async function getServerSideProps(context) {
+	const catResponse = await axios.get(API_URL + 'products/categories')
+	const categories = catResponse.data;
+	const query = context.query
+	const productsURL = `${API_URL}ecommerce/allproducts${query.page ? '?' + context.resolvedUrl.split('?')[1] : '?page=1'}`
+	const productsResponse = await axios.get(productsURL)
+	const products = productsResponse.data;
+	console.log(context)
+	console.log('Se fetechearon ', products.length, ' productos.')
+	return {
+		props: {
+			categories,
+			products,
+			currentPage: query.page ? Number(query.page) : 1
+		}
+	}
+}
 
 export default productos;

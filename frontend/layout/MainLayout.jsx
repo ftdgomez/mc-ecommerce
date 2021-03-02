@@ -22,10 +22,10 @@ export const MainLayout = ({ children }) => {
 			href: '/sucursales',
 			text: 'Sucursales',
 		},
-		{
-			href: '/blog',
-			text: 'Blog',
-		},
+		// {
+		// 	href: '/blog',
+		// 	text: 'Blog',
+		// },
 		/* {
 			href: '/contacto',
 			text: 'Contacto',
