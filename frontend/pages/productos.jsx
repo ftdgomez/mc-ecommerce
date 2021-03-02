@@ -1,10 +1,20 @@
 import { MainLayout } from '../layout/MainLayout';
 import Link from 'next/link';
+import router from 'next/router';
 import { ProductCard } from '../components/ProductCard';
 import axios from 'axios';
 import { API_URL } from '../constant';
+import {useState} from 'react';
 
-const productos = ({ categories, products, currentPage}) => {
+const productos = ({ categories, products, currentPage, currentCategory, keyword}) => {
+
+	const [searchKeyword, setSearchKeyword] = useState('')
+
+	const handleSearch = (e) => {
+		e.preventDefault()
+		router.push('/productos?search=' + searchKeyword)
+	}
+
 	return (
 		<MainLayout>
 			<header>
@@ -18,17 +28,26 @@ const productos = ({ categories, products, currentPage}) => {
 					</p>
 				</div>
 			</header>
-			<article className='container md:grid grid-cols-3 gap-4'>
+			{
+				!keyword &&
+		<article className='container md:grid grid-cols-3 gap-4'>
 				{products.slice(0, 3).map((item) => (
 					<ProductCard badge='Destacado' product={item} key={item.id}/>
 				))}
 			</article>
+			}
+	
+			{
+				currentCategory && <div className="container"><h3 className="text-center text-2xl capitalize p-4 border font-bold bg-white">{categories.filter(c => c.id === Number(currentCategory))[0].category_name}</h3></div>
+			}
 			<aside className='container'>
-				<form className=' w-full mx-auto h-full flex rounded-lg px-2'>
+				<form onSubmit={handleSearch} className=' w-full mx-auto h-full flex rounded-lg'>
 					<input
 						type='text'
 						placeholder='¿Buscas algo en específico?'
 						className='border border-gray-200 rounded-l w-full bg-white'
+						value={searchKeyword}
+						onChange={(e)=>setSearchKeyword(e.target.value)}
 					/>
 					<button className='border rounded-r bg-white border-l w-12 flex justify-center items-center text-gray-600 hover:bg-gray-200 hover:text-primary'>
 						<svg
@@ -43,18 +62,17 @@ const productos = ({ categories, products, currentPage}) => {
 					</button>
 				</form>
 			</aside>
-
-					<main className='m-4 container md:grid grid-cols-12 gap-4'>
+					<main className='mb-4 container md:grid grid-cols-12 gap-4'>
 					<div className='col-span-3 bg-white p-4 border rounded mb-4 md:mb-0'>
 						<h2 className='font-bold text-lg pb-2 border-b'>Categorías</h2>
-						<Link href='/'>
+						<Link href='/productos'>
 							<a className='text-gray-500 hover:text-gray-800 my-4 text-sm block'>
 								Todos los productos
 							</a>
 						</Link>
 						{
 							categories.map(c => (
-						<Link href={`/products?cat=${c.id}`} key={`cat-${c.id}`}>
+						<Link href={`/productos?cat=${c.id}`} key={`cat-${c.id}`}>
 							<a className='text-gray-500 capitalize hover:text-gray-800 my-4 text-sm block'>
 						{c.category_name}
 							</a>
@@ -63,11 +81,16 @@ const productos = ({ categories, products, currentPage}) => {
 						}
 										</div>
 					<div className='col-span-9 md:grid grid-cols-3 gap-4'>
-						{products.slice(3, 12).map((item) => (
+						{products.slice(keyword ? 0 : 3, keyword ? products.length : 12).map((item) => (
 							<ProductCard key={item.id} product={item} />
 						))}
+						{products.length < 1 && <p className="bg-white border p-4">Oops! parece que no hay productos por aquí.</p>}
 					</div>
 				</main>
+
+            {
+				!keyword &&
+
 			<footer className='md:flex justify-between items-center bg-white container border rounded'>
 				<p></p>
 				<div>
@@ -115,6 +138,7 @@ const productos = ({ categories, products, currentPage}) => {
 					</nav>
 				</div>
 			</footer>
+			}
 		</MainLayout>
 	);
 };
@@ -123,16 +147,22 @@ export async function getServerSideProps(context) {
 	const catResponse = await axios.get(API_URL + 'products/categories')
 	const categories = catResponse.data;
 	const query = context.query
-	const productsURL = `${API_URL}ecommerce/allproducts${query.page ? '?' + context.resolvedUrl.split('?')[1] : '?page=1'}`
+	const currentPage = query.page
+	const currentCategory = query.cat || '';
+	const keyword = query.search || false;
+	const productsURL = `${API_URL}ecommerce/allproducts${currentPage ? '?page=' + currentPage : '?page=1'}${currentCategory ? `&cat=${currentCategory}` : ''}${keyword ? `&search=${keyword}` : ''}`
 	const productsResponse = await axios.get(productsURL)
 	const products = productsResponse.data;
-	console.log(context)
-	console.log('Se fetechearon ', products.length, ' productos.')
+	console.log(products[0])
+	console.log(keyword)
+	console.log('Se fetchearon ', products.length, ' productos.')
 	return {
 		props: {
 			categories,
 			products,
-			currentPage: query.page ? Number(query.page) : 1
+			currentPage: query.page ? Number(query.page) : 1,
+			currentCategory,
+			keyword
 		}
 	}
 }

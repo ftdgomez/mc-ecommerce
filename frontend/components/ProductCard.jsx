@@ -14,13 +14,13 @@ export const ProductCard = ({ product, badge }) => {
 	};
 	return (
 		<div className='mb-4'>
-			<Link href={`/product/${sku}`}>
+			<Link href={`/producto?sku=${sku}`}>
 				<a>
 					<div
 						style={{
 							backgroundImage: `url(https://sass.refrigeracionmc.com${pictures?.split(',')[0]})`,
 						}}
-						className='mb-0 border rounded bg-cover bg-center h-48 w-full flex flex-col items-end translate-y-0 hover:translate-y-2'>
+						className='mb-0 border rounded bg-cover bg-center bg-white h-48 w-full flex flex-col items-end translate-y-0 hover:translate-y-2'>
 						{badge && (
 							<span className='self-start px-2 m-4 font-bold py bg-primary text-white text-xs rounded-full'>
 								{badge}
@@ -40,6 +40,7 @@ export const ProductCard = ({ product, badge }) => {
 					<p className='text-gray-600 text-sm font-bold'>${price}</p>
 				</div>
 				<div className='flex justify-between w-full items-center mt-4'>
+					{product.totalstock > 1 ?
 					<button
 						onClick={() => handleAddToCart(product)}
 						className='bg-white text-sm px-4 py-2 text-gray-800 rounded shadow flex items-center hover:bg-primary hover:text-white '>
@@ -54,6 +55,14 @@ export const ProductCard = ({ product, badge }) => {
 						</svg>
 						Añadir a carrito
 					</button>
+					:
+					<div
+						className='bg-red-300 text-sm px-4 py-2 text-gray-800 rounded shadow flex items-center hover:bg-primary hover:text-white '>
+						Fuera de stock
+					</div>
+				}
+					
+
 					<a href={`https://wa.me/584241217659?text=${encodeURIComponent(`Hola! me gustaría tener más información acerca de ${product_name}.`)}`} target="_blank" className=''>
 						<svg
 							className='h-7 text-green-500'

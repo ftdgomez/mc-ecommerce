@@ -20,12 +20,9 @@ const sucursales = () => {
 							</p>
 							<p className='text-sm'>
 								Horario: <br />
-								Lunes a vier: de 8:30 a.m. a 5:30 p.m. <br />
-								Sábados: 9:00 a.m. a 3:00 p.m.
+								LUNES A VIERNES  DE  8.00 AM  HASTA LAS 4 Y 30 PM <br />
+     							DIAS SABADOS  DE  8.00 AM  HASTA  LA 2.00PM
 							</p>
-							<Button href='/' className='mt-4'>
-								Ver Productos Disponibles
-							</Button>
 						</div>
 					</div>
 				</div>
@@ -42,14 +39,11 @@ const sucursales = () => {
 								telf: (0212)763.3852 <br />
 								mov: (0424)121.7659
 							</p>
-							<p className='text-sm'>
+					<p className='text-sm'>
 								Horario: <br />
-								Lunes a vier: de 8:30 a.m. a 5:30 p.m. <br />
-								Sábados: 9:00 a.m. a 3:00 p.m.
+								LUNES A VIERNES  DE  8.00 AM  HASTA LAS 4 Y 30 PM <br />
+     							DIAS SABADOS  DE  8.00 AM  HASTA  LA 2.00PM
 							</p>
-							<Button href='/' className='mt-4'>
-								Ver Productos Disponibles
-							</Button>
 						</div>
 					</div>
 				</div>
@@ -65,25 +59,21 @@ const sucursales = () => {
 								telf: (0212)763.3852 <br />
 								mov: (0424)121.7659
 							</p>
-							<p className='text-sm'>
+						<p className='text-sm'>
 								Horario: <br />
-								Lunes a vier: de 8:30 a.m. a 5:30 p.m. <br />
-								Sábados: 9:00 a.m. a 3:00 p.m.
+								LUNES A VIERNES  DE  8.00 AM  HASTA LAS 4 Y 30 PM <br />
+     							DIAS SABADOS  DE  8.00 AM  HASTA  LA 2.00PM
 							</p>
-							<Button href='/' className='mt-4'>
-								Ver Productos Disponibles
-							</Button>
 						</div>
 					</div>
 				</div>
 				<div>
 					<div className='md:grid md:grid-cols-2'>
-						<img className='w-full' src='/cementerio.jpeg' />
+						<img className='w-full' src='/placeholder.jpg' />
 						<div className='bg-white p-4 md:px-12 flex flex-col justify-center'>
-							<h4 className='title'>El Cementerio</h4>
-							<p className='mb-4 text-sm'>
-								Av. Principal del Cementerio , Centro Comercial Telares Los
-								Andes. Sector Verde – Caracas (en la entrada de la puerta 3).
+							<h4 className='title'>SAN MARTIN</h4>
+							<p className='mb-4 text-sm lowecase'>
+							AV. SAN MARTIN  CON CALLE CIRCUNVALACION , EDF RESIDENCIAS CASANAY PB.  LOCAL  C-1  SAN MARTIN- CARACAS  DISTRITO CAPITAL  ZONA POSTAL  1020
 							</p>
 							<p className='text-sm border-b border-t py-4'>
 								telf: (0212)763.3852 <br />
@@ -91,12 +81,10 @@ const sucursales = () => {
 							</p>
 							<p className='text-sm'>
 								Horario: <br />
-								Lunes a vier: de 8:30 a.m. a 5:30 p.m. <br />
-								Sábados: 9:00 a.m. a 3:00 p.m.
+								LUNES A VIERNES  DE  8.00 AM  HASTA LAS 4 Y 30 PM <br />
+     							DIAS SABADOS  DE  8.00 AM  HASTA  LA 2.00PM
 							</p>
-							<Button href='/' className='mt-4'>
-								Ver Productos Disponibles
-							</Button>
+							
 						</div>
 					</div>
 				</div>

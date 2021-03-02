@@ -53,7 +53,7 @@ export const MainLayout = ({ children }) => {
 				}`}></div>
 			<header className='h-20'>
 				<nav className='bg-gray-50 border-b w-full fixed top-0 left-0 z-10'>
-					<div className='container mx-auto px-6 py-3 md:flex md:justify-between md:items-center'>
+					<div className='max-w-7xl mx-auto px-6 py-3 md:flex md:justify-between md:items-center'>
 						<div className='flex justify-between items-center'>
 							<div>
 								<Link href='/#'>
