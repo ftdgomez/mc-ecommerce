@@ -6,7 +6,7 @@ import { ProductCard } from '../components/ProductCard';
 import { API_URL } from '../constant';
 import axios from 'axios';
 
-const producto = ({product, dolar}) => {
+const producto = ({product, dolar, related}) => {
 	const { addToCart, setShowCart } = useContext(ProductsContext);
 
 	const handleAddToCart = (product) => {
@@ -86,9 +86,9 @@ const producto = ({product, dolar}) => {
 					Quizá te pueda interesar:
 				</h2>
 				<div className='md:grid grid-cols-3 gap-4'>
-					{/* {productList.slice(0, 3).map((item) => (
-						<ProductCard badge='Destacado' product={item} />
-					))} */}
+					{related.map((item) => (
+						<ProductCard key={item.id} badge='Destacado' product={item} />
+					))}
 				</div>
 			</article>
 		</MainLayout>
@@ -111,9 +111,7 @@ export async function getServerSideProps(context) {
 		product.stock = stockResponse.data
 	}
 	const dolarResponse = await axios.get(API_URL + 'dolar');
-	console.log(product)
-	console.log(dolarResponse.data.dolar)
-	const relResponse = await axios.get(API_URL + 'eccomerce/related/' + product.category_id)
+	const relResponse = await axios.get(API_URL + 'ecommerce/related/' + product.category_id)
 	return {
 		props: {
 			product,
