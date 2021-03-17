@@ -73,7 +73,7 @@ export default function Home({ categories, products }) {
 						</Link>
 						{
 							categories.map(c => (
-						<Link href={`/products?cat=${c.id}`} key={`cat-${c.id}`}>
+						<Link href={`/productos?cat=${c.id}`} key={`cat-${c.id}`}>
 							<a className='text-gray-500 capitalize hover:text-gray-800 my-4 text-sm block'>
 						{c.category_name}
 							</a>
