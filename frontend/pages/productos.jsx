@@ -6,7 +6,7 @@ import axios from 'axios';
 import { API_URL } from '../constant';
 import {useState} from 'react';
 
-const productos = ({ categories, products, currentPage, currentCategory, keyword}) => {
+const productos = ({ categories, products, currentPage, currentCategory, keyword, totalPages}) => {
 
 	const [searchKeyword, setSearchKeyword] = useState('')
 
@@ -17,7 +17,7 @@ const productos = ({ categories, products, currentPage, currentCategory, keyword
 
 	return (
 		<MainLayout>
-			<header>
+			<header className="p-4 md:p-0 bg-white mb-8">
 				<div className='lg:text-center bg-white py-8'>
 					<h1 className='mt-2 text-3xl leading-8 font-extrabold tracking-tight sm:text-4xl'>
 						<span className='font-gray-700'>Nuestros</span>{' '}
@@ -30,7 +30,7 @@ const productos = ({ categories, products, currentPage, currentCategory, keyword
 			</header>
 			{
 				!keyword &&
-		<article className='container md:grid grid-cols-3 gap-4'>
+		<article className='p-4 md:p-0 max-w-6xl mx-auto md:grid grid-cols-3 gap-4'>
 				{products.slice(0, 3).map((item) => (
 					<ProductCard badge='Destacado' product={item} key={item.id}/>
 				))}
@@ -40,12 +40,12 @@ const productos = ({ categories, products, currentPage, currentCategory, keyword
 			{
 				currentCategory && <div className="container"><h3 className="text-center text-2xl capitalize p-4 border font-bold bg-white">{categories.filter(c => c.id === Number(currentCategory))[0].category_name}</h3></div>
 			}
-			<aside className='container'>
-				<form onSubmit={handleSearch} className=' w-full mx-auto h-full flex rounded-lg'>
+			<aside className='max-w-6xl m-4 md:m-0 md:mx-auto md:mb-8'>
+				<form onSubmit={handleSearch} className='h-full flex rounded-lg'>
 					<input
 						type='text'
 						placeholder='¿Buscas algo en específico?'
-						className='border border-gray-200 rounded-l w-full bg-white'
+						className='border border-gray-200 rounded-l flex-1 bg-white'
 						value={searchKeyword}
 						onChange={(e)=>setSearchKeyword(e.target.value)}
 					/>
@@ -62,7 +62,7 @@ const productos = ({ categories, products, currentPage, currentCategory, keyword
 					</button>
 				</form>
 			</aside>
-					<main className='mb-4 container md:grid grid-cols-12 gap-4'>
+					<main className='mb-4 mx-auto max-w-6xl md:grid grid-cols-12 gap-4'>
 					<div className='col-span-3 bg-white p-4 border rounded mb-4 md:mb-0'>
 						<h2 className='font-bold text-lg pb-2 border-b'>Categorías</h2>
 						<Link href='/productos'>
@@ -80,7 +80,7 @@ const productos = ({ categories, products, currentPage, currentCategory, keyword
 							))
 						}
 										</div>
-					<div className='col-span-9 md:grid grid-cols-3 gap-4'>
+					<div className='col-span-9 md:grid grid-cols-3 gap-4 m-4 md:m-0'>
 						{products.slice(keyword ? 0 : 3, keyword ? products.length : 12).map((item) => (
 							<ProductCard key={item.id} product={item} />
 						))}
@@ -108,18 +108,18 @@ const productos = ({ categories, products, currentPage, currentCategory, keyword
 								fill='currentColor'
 								aria-hidden='true'>
 								<path
-									fill-rule='evenodd'
+									fillRule='evenodd'
 									d='M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z'
-									clip-rule='evenodd'
+									clipRule='evenodd'
 								/>
 							</svg>
 						</a>
 
 						<span className='relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700'>
-							...
+				{currentPage} de {totalPages}
 						</span>
 						<a
-							href={`/productos/?page=${currentPage + 1}`} 
+							href={`/productos/?page=${currentPage >= totalPages ? currentPage : currentPage + 1}`} 
 							className='relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50'>
 							<span className='sr-only'>Next</span>
 							<svg
@@ -127,11 +127,11 @@ const productos = ({ categories, products, currentPage, currentCategory, keyword
 								xmlns='http://www.w3.org/2000/svg'
 								viewBox='0 0 20 20'
 								fill='currentColor'
-								ariaHidden='true'>
+								aria-hidden='true'>
 								<path
-									fill-rule='evenodd'
+									fillRule='evenodd'
 									d='M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z'
-									clip-rule='evenodd'
+									clipRule='evenodd'
 								/>
 							</svg>
 						</a>
@@ -147,21 +147,20 @@ export async function getServerSideProps(context) {
 	const catResponse = await axios.get(API_URL + 'products/categories')
 	const categories = catResponse.data;
 	const query = context.query
-	const currentPage = query.page
 	const currentCategory = query.cat || '';
 	const keyword = query.search || false;
+	const currentPage = query.page ? Number(query.page) : 1;
 	const productsURL = `${API_URL}ecommerce/allproducts${currentPage ? '?page=' + currentPage : '?page=1'}${currentCategory ? `&cat=${currentCategory}` : ''}${keyword ? `&search=${keyword}` : ''}`
 	const productsResponse = await axios.get(productsURL)
-	const products = productsResponse.data;
-	console.log(products[0])
-	console.log(keyword)
-	console.log('Se fetchearon ', products.length, ' productos.')
+	const res = productsResponse.data;
+	console.log(res.count)
 	return {
 		props: {
 			categories,
-			products,
-			currentPage: query.page ? Number(query.page) : 1,
+			products: res.products,
+			currentPage,
 			currentCategory,
+			totalPages: Math.ceil(res.count / 12),
 			keyword
 		}
 	}

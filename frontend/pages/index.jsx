@@ -81,7 +81,7 @@ export default function Home({ categories, products }) {
 							))
 						}
 										</div>
-					<div className='col-span-9 md:grid grid-cols-3 gap-4'>
+					<div className='col-span-9 md:grid grid-cols-3 gap-4 p-4 md:p-0'>
 						{productList.slice(0, 9).map((item) => (
 							<ProductCard key={item.id} product={item} />
 						))}
@@ -98,7 +98,6 @@ export default function Home({ categories, products }) {
 							<div className='grid grid-cols-2 md:grid-cols-4 gap-4 items-center justify-items-center'>
 								<div className='flex justify-center flex-col items-center text-center'>
 									<img className='h-8' src='/zelle.png' />
-									<h4 className='text-gray-600'>Zelle</h4>
 								</div>
 								<div className='flex justify-center flex-col items-center text-center'>
 									<img className='h-12' src='/trans.png' />
@@ -110,7 +109,6 @@ export default function Home({ categories, products }) {
 								</div>
 								<div className='flex justify-center flex-col items-center text-center'>
 									<img className='h-6' src='/paypal.png' />
-									<h4 className='text-gray-600'>Paypal</h4>
 								</div>
 								{/* <div className='flex justify-center flex-col items-center text-center'>
 									<img className='h-8' src='/tarjeta.png' />
@@ -231,8 +229,8 @@ export async function getServerSideProps(context) {
 	const query = context.query
 	const productsURL = `${API_URL}ecommerce/allproducts?page=1`
 	const productsResponse = await axios.get(productsURL)
-	const products = productsResponse.data.filter(i => i.avaible_online);
-	console.log(context)
+	const products = productsResponse.data.products.filter(i => i.avaible_online);
+	//console.log(context)
 	console.log('Se fetechearon ', products.length, ' productos.')
 	return {
 		props: {

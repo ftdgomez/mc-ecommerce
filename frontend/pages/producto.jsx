@@ -45,7 +45,7 @@ const producto = ({product, dolar}) => {
 					{product.stock.total > 1 ?
 					<button
 						onClick={() => handleAddToCart(product)}
-						className='bg-white text-sm px-4 py-2 text-gray-800 rounded shadow flex items-center hover:bg-primary hover:text-white '>
+						className='bg-primary text-sm px-4 py-2 text-white rounded shadow flex items-center hover:bg-primary hover:text-white '>
 						<svg
 							className='h-4 mr-2'
 							xmlns='http://www.w3.org/2000/svg'
@@ -113,10 +113,12 @@ export async function getServerSideProps(context) {
 	const dolarResponse = await axios.get(API_URL + 'dolar');
 	console.log(product)
 	console.log(dolarResponse.data.dolar)
+	const relResponse = await axios.get(API_URL + 'eccomerce/related/' + product.category_id)
 	return {
 		props: {
 			product,
-			dolar: dolarResponse.data.dolar
+			dolar: dolarResponse.data.dolar,
+			related: relResponse.data
 		}
 	}
 }

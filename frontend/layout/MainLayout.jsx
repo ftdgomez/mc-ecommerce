@@ -103,7 +103,7 @@ export const MainLayout = ({ children }) => {
 								))}
 							</div>
 
-							<div className='fixed bottom-0 w-full bg-white left-0 p-4 md:relative md:p-0 flex md:justify-center md:block'>
+							<div className='fixed bottom-0 w-full bg-white left-0 p-4 md:relative md:p-0 flex justify-center border-t md:border-transparent md:justify-center md:block'>
 								<button
 									className='relative text-gray-700 hover:text-gray-600 flex items-center justify-center'
 									onClick={() => setShowCart(!showCart)}>
@@ -136,7 +136,7 @@ export const MainLayout = ({ children }) => {
 			<footer className='container-xl md:grid grid-cols-3 bg-white py-8 border-t'>
 				<div>
 					<p className='text-center md:text-left'>
-						Copyright © {new Date().getFullYear()} Refrigeración MC 2603
+						Copyright © {new Date().getFullYear()} <br className="md:hidden" />Refrigeración MC 2603
 					</p>
 				</div>
 				<div className='flex flex-col text-center md:block md:text-center'>
@@ -156,7 +156,7 @@ export const MainLayout = ({ children }) => {
 						</Link>
 					</p>
 				</div>
-				<div className='text-center mt-2 md:mt-0 md:text-right flex md:justify-end text-gray-600'>
+				<div className='text-center mt-2 md:mt-0 md:text-right flex justify-center md:justify-end text-gray-600'>
 					<a
 						target='_blank'
 						href='https://www.instagram.com/refrigeracionmc2603'>
@@ -183,6 +183,7 @@ export const MainLayout = ({ children }) => {
 					</a>
 				</div>
 			</footer>
+			<div className="h-24 md:h-0"></div>
 		</div>
 	);
 };
