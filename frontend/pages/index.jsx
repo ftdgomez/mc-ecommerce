@@ -224,18 +224,26 @@ export default function Home({ categories, products }) {
 }
 
 export async function getServerSideProps(context) {
+	try {
 	const catResponse = await axios.get(API_URL + 'products/categories')
 	const categories = catResponse.data;
 	const query = context.query
 	const productsURL = `${API_URL}ecommerce/allproducts?page=1`
 	const productsResponse = await axios.get(productsURL)
 	const products = productsResponse.data.products.filter(i => i.avaible_online);
-	//console.log(context)
-	console.log('Se fetechearon ', products.length, ' productos.')
 	return {
 		props: {
 			categories,
 			products
+		}
+	}
+	} catch (error) {
+		console.log(error)	
+		return {
+			props: {
+				categories: [],
+				products: []
+			}
 		}
 	}
 }
