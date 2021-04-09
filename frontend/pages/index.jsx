@@ -66,7 +66,7 @@ export default function Home({ categories, products }) {
 				<main className='m-4 max-w-7xl mx-auto md:grid grid-cols-12 gap-4'>
 					<div className='col-span-3 bg-white p-4 border rounded mb-4 md:mb-0'>
 						<h2 className='font-bold text-lg pb-2 border-b'>Categorías</h2>
-						<Link href='/'>
+						<Link href='/productos'>
 							<a className='text-gray-500 hover:text-gray-800 my-4 text-sm block'>
 								Todos los productos
 							</a>
@@ -225,16 +225,12 @@ export default function Home({ categories, products }) {
 
 export async function getServerSideProps(context) {
 	try {
-	const catResponse = await axios.get(API_URL + 'products/categories')
-	const categories = catResponse.data;
-	const query = context.query
-	const productsURL = `${API_URL}ecommerce/allproducts?page=1`
-	const productsResponse = await axios.get(productsURL)
-	const products = productsResponse.data.products.filter(i => i.avaible_online);
+	const indexResponse = await axios.get(API_URL + 'ecommerce/index')
+	const data = indexResponse.data
 	return {
 		props: {
-			categories,
-			products
+			categories:data.categories,
+			products:data.products
 		}
 	}
 	} catch (error) {

@@ -144,25 +144,25 @@ const productos = ({ categories, products, currentPage, currentCategory, keyword
 };
 
 export async function getServerSideProps(context) {
-	const catResponse = await axios.get(API_URL + 'products/categories')
-	const categories = catResponse.data;
-	const query = context.query
-	const currentCategory = query.cat || '';
-	const keyword = query.search || false;
-	const currentPage = query.page ? Number(query.page) : 1;
-	const productsURL = `${API_URL}ecommerce/allproducts${currentPage ? '?page=' + currentPage : '?page=1'}${currentCategory ? `&cat=${currentCategory}` : ''}${keyword ? `&search=${keyword}` : ''}`
-	const productsResponse = await axios.get(productsURL)
-	const res = productsResponse.data;
-	console.log(res.count)
-	return {
-		props: {
-			categories,
-			products: res.products,
-			currentPage,
-			currentCategory,
-			totalPages: Math.ceil(res.count / 12),
-			keyword
-		}
+	try {
+const query = context.query
+const currentPage = query.page ? Number(query.page) : 1;
+const currentCategory = query.cat || '';
+const keyword = query.search || false;
+
+const productsURL = `${API_URL}ecommerce/index${currentPage ? '?page=' + currentPage : '?page=1'}${currentCategory ? `&cat=${currentCategory}` : ''}${keyword ? `&search=${keyword}` : ''}`
+const {data} = await axios.get(productsURL)
+
+return {
+	props: {
+		...data,
+		currentCategory,
+		keyword
+	}
+}
+	} catch (error) {
+		console.log(error);
+		return  {props:{}}
 	}
 }
 
