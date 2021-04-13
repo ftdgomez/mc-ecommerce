@@ -90,7 +90,15 @@ const ProductItem = ({ product, handleDelete }) => {
 };
 
 export const CartSideBar = ({ showCart, handler, embedded }) => {
-	const { productCart, removeFromCart } = useContext(ProductsContext);
+	const { productCart, removeFromCart, setProductCart } = useContext(ProductsContext);
+
+	useEffect(()=>{
+		if (!productCart || productCart.length < 1){
+			console.log('no hay productos en el carrito', window.innerWidth)
+		} else {
+			console.log('si hay productos en el carrito')
+		}
+	},[])
 
 	return (
 		<div className={embedded ? undefined : 'flex w-full max-h-screen'}>

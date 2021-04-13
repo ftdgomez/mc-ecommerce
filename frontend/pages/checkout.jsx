@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import React, { useContext } from 'react';
-import { Button } from '../components/Button';
 import { CartSideBar } from '../components/CartSideBar';
 import { StyledLink } from '../components/StyledLink';
 import { UserContext } from '../context/userContext';
