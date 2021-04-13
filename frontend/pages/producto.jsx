@@ -42,7 +42,7 @@ const producto = ({product, dolar, related}) => {
 						<p className='pt-2 mb-4 text-sm'>
 							{product.description}	
 						</p>
-					{product.stock.total > 1 ?
+					{product.stock > 0 ?
 					<button
 						onClick={() => handleAddToCart(product)}
 						className='bg-primary text-sm px-4 py-2 text-white rounded shadow flex items-center hover:bg-primary hover:text-white '>
@@ -87,7 +87,7 @@ const producto = ({product, dolar, related}) => {
 				</h2>
 				<div className='md:grid grid-cols-3 gap-4'>
 					{related.map((item) => (
-						<ProductCard key={item.id} badge='Destacado' product={item} />
+						<ProductCard key={item.id} badge='Destacado' product={item} buttons={false} />
 					))}
 				</div>
 			</article>
@@ -96,27 +96,22 @@ const producto = ({product, dolar, related}) => {
 };
 
 export async function getServerSideProps(context) {
-	const sku = context.query.sku
-	let product;
-	if (sku) {
-		const productResponse = await axios.get(API_URL + 'ecommerce/product/' + sku )
-		product = productResponse.data;
-	}
-	else {
-		product = ''
-	}
-	if (product !== '')
-	{
-		const stockResponse = await axios.get(API_URL + 'inventory/allstock/' + product.id)
-		product.stock = stockResponse.data
-	}
-	const dolarResponse = await axios.get(API_URL + 'dolar');
-	const relResponse = await axios.get(API_URL + 'ecommerce/related/' + product.category_id)
-	return {
-		props: {
-			product,
-			dolar: dolarResponse.data.dolar,
-			related: relResponse.data
+	try {
+		const sku = context.query.sku
+		if (!sku) throw new Error('SKU invalid');
+		let productResponse = await axios.get(API_URL + 'ecommerce/product/' + sku );
+		const dolarResponse = await axios.get(API_URL + 'dolar');
+		return {
+			props: {
+				product: productResponse.data,
+				dolar: dolarResponse.data.dolar,
+				related: productResponse.data.related
+			}
+		}
+	} catch (error) {
+		console.log(error)
+		return {
+			notFound: true
 		}
 	}
 }
