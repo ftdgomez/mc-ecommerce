@@ -98,7 +98,7 @@ const productos = ({ categories, products, currentPage, currentCategory, keyword
 						className='relative z-0 inline-flex shadow-sm -space-x-px'
 						aria-label='Pagination'>
 						<a
-							href={`/productos/?page=${currentPage === 1 ? 1 : currentPage - 1}`} 
+							href={`/productos/?page=${currentPage === 1 ? 1 : currentPage - 1}${currentCategory ? `&cat=${currentCategory}` : '' }`} 
 							className='relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50'>
 							<span className='sr-only'>Previous</span>
 							<svg
@@ -119,7 +119,7 @@ const productos = ({ categories, products, currentPage, currentCategory, keyword
 				{currentPage} de {totalPages}
 						</span>
 						<a
-							href={`/productos/?page=${currentPage >= totalPages ? currentPage : currentPage + 1}`} 
+							href={`/productos/?page=${currentPage >= totalPages ? currentPage : currentPage + 1}${currentCategory ? `&cat=${currentCategory}` : '' }`} 
 							className='relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50'>
 							<span className='sr-only'>Next</span>
 							<svg
@@ -152,7 +152,7 @@ const keyword = query.search || false;
 
 const productsURL = `${API_URL}ecommerce/index${currentPage ? '?page=' + currentPage : '?page=1'}${currentCategory ? `&cat=${currentCategory}` : ''}${keyword ? `&search=${keyword}` : ''}`
 const {data} = await axios.get(productsURL)
-
+console.log(Object.keys(data))
 return {
 	props: {
 		...data,

@@ -24,6 +24,10 @@ export const ProductsProvider = ({ children }) => {
   };
   const removeFromCart = (product) => {
     setProductCart(productCart.filter((p) => p.id !== product.id));
+      localStorage.setItem(
+        'productCart',
+        JSON.stringify([...productCart.filter((p) => p.id !== product.id)]),
+      );
   };
   const contextProps = {
     productList,
