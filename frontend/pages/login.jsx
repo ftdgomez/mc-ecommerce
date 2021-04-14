@@ -9,10 +9,11 @@ import { UserContext } from '../context/userContext';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import Link from 'next/link';
+import { API_URL } from '../constant';
 
-const login = () => {
+const login = ({ redirectto }) => {
 	const router = useRouter();
-
+	const [loading, setLoading] = useState(false);
 	const [values, handleChange] = useForm({
 		email: '',
 		password: '',
@@ -24,9 +25,11 @@ const login = () => {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
+		setLoading(true)
 		if (values.email === '' || values.password === '') {
 			toast.error('Los campos están vacíos.');
 			setError(!error);
+		setLoading(false)
 		} else {
 			try {
 				const config = {
@@ -35,7 +38,7 @@ const login = () => {
 					},
 				};
 				const { data } = await axios.post(
-					`${process.env.NEXT_PUBLIC_API_URL}/api/users/login`,
+					`${API_URL}ecommerce/auth`,
 					values,
 					config
 				);
@@ -43,10 +46,11 @@ const login = () => {
 				if (values.remember === 'true') {
 					localStorage.setItem('userInfo', JSON.stringify(data));
 				}
-				router.push('/');
+				router.push('/' + redirectto ? redirectto : '');
 			} catch (error) {
 				handleChange({ password: '' });
 				setError(true);
+		setLoading(false)
 				console.log(error);
 				toast.error('Email o contraseña inválidos.');
 			}
@@ -55,6 +59,11 @@ const login = () => {
 
 	return (
 		<FormPage>
+			{ loading && 
+			<div className="h-screen w-full flex items-center justify-center fixed top-0 left-0 bg-black bg-opacity-80">
+				<p className="text-white">cargando...</p>
+			</div>
+			}
 			<main className='col-span-3'>
 				<div className='flex items-center justify-center w-full h-full'>
 					<FormBody handler={handleSubmit}>
@@ -107,5 +116,14 @@ const login = () => {
 		</FormPage>
 	);
 };
+
+export async function getServerSideProps(context){
+	const redirectto = context.query.redireccto || ''
+	return {
+		props: {
+			redirectto
+		}
+	}
+}
 
 export default login;

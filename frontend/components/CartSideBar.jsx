@@ -19,9 +19,14 @@ const ProductItem = ({ product, handleDelete }) => {
 	return (
 		<li className='grid grid-cols-4 gap-4 border m-4 bg-white shadow'>
 			<div
-				style={{ backgroundImage: `url(https://sass.refrigeracionmc.com/${pictures.split(',')[0]})` }}
-				className='h-20 w-20 bg-cover bg-center'></div>
-			<p className='col-span-2 grid grid-rows-2'>
+				className='h-20 w-20 bg-cover bg-center flex items-center jsutify-center relative'>
+						<div className="bg-white relative z-10">
+							<img src={`https://sass.refrigeracionmc.com${pictures?.split(',')[0]}`} alt="" />
+						</div>
+					<div className="absolute top-8 left-8 border border-t-4 border-primary rounded-full h-4 w-4 animate-spin"></div>
+				</div>
+
+			<div className='col-span-2 grid grid-rows-2'>
 				<h4 className='font-bold text-sm capitalize overflow-hidden h-10'>{product_name}</h4>
 				<div className='grid grid-cols-3 items-center w-20 text-center'>
 					<button
@@ -43,13 +48,13 @@ const ProductItem = ({ product, handleDelete }) => {
 						+
 					</button>
 				</div>
-			</p>
-			<div class='flex flex-col justify-between space-y-2 border-l'>
+			</div>
+			<div className='flex flex-col justify-between space-y-2 border-l'>
 				<p className='text-right font-bold border-b p-2'>
 					${price} {count > 1 && `x ${count}`}
 				</p>
 				<button
-					class='flex item-center h-full justify-end px-2'
+					className='flex item-center h-full justify-end px-2'
 					onClick={() => handleDelete(product)}>
 					<svg
 						width='24'
@@ -94,22 +99,23 @@ export const CartSideBar = ({ showCart, handler, embedded }) => {
 
 	useEffect(()=>{
 		if (!productCart || productCart.length < 1){
-			console.log('no hay productos en el carrito', window.innerWidth)
-		} else {
-			console.log('si hay productos en el carrito')
+			const products = window.localStorage.getItem('productCart');
+			if (products){
+				setProductCart(JSON.parse(products));
+			}
 		}
 	},[])
 
 	return (
 		<div className={embedded ? undefined : 'flex w-full max-h-screen'}>
 			{!embedded && (
-				<div className='h-screen bg-black opacity-70 fixed top-0 left-0 w-full z-10'></div>
+				<div className='h-screen bg-black opacity-70 fixed top-0 left-0 w-full' style={{zIndex: 21}}></div>
 			)}
 			<div
 				className={
 					embedded
 						? 'border p-4 rounded bg-white'
-						: 'h-screen bg-gray-100 w-full grid grid-rows-8 md:w-96 md:ml-auto z-20 fixed top-0 right-0'
+						: 'h-screen bg-gray-100 w-full flex flex-col md:w-96 md:ml-auto z-30 fixed top-0 right-0'
 				}>
 				<header
 					className={
@@ -163,7 +169,7 @@ export const CartSideBar = ({ showCart, handler, embedded }) => {
 						</p>
 					) : (
 						productCart.map((p) => (
-							<ProductItem product={p} handleDelete={removeFromCart} />
+							<ProductItem key={p.id} product={p} handleDelete={removeFromCart} />
 						))
 					)}
 				</div>

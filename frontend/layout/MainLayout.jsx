@@ -48,11 +48,11 @@ export const MainLayout = ({ children }) => {
 			</Head>
 			<div
 				onClick={() => setShowNavBar(!showNavBar)}
-				className={`h-screen bg-black opacity-70 fixed top-0 left-0 w-full z-10 ${
+				className={`h-screen bg-black opacity-70 fixed top-0 left-0 w-full z-30 ${
 					!showNavBar && 'hidden'
 				}`}></div>
 			<header className='h-20'>
-				<nav className='bg-gray-50 border-b w-full fixed top-0 left-0 z-10'>
+				<nav className='bg-gray-50 border-b w-full fixed top-0 left-0' style={{zIndex: 21}}>
 					<div className='max-w-7xl mx-auto px-6 py-3 md:flex md:justify-between md:items-center'>
 						<div className='flex justify-between items-center'>
 							<div>

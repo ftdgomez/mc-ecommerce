@@ -5,7 +5,6 @@ import { ProductsContext } from '../context/ProductsContext';
 export const ProductCard = ({ product, badge, buttons }) => {
 	const { pictures, product_name, price, sku } = product;
 	const { addToCart, setShowCart } = useContext(ProductsContext);
-
 	const handleAddToCart = (product) => {
 		const added = addToCart({ ...product, qty: 1 });
 		if (added) {
@@ -17,12 +16,15 @@ export const ProductCard = ({ product, badge, buttons }) => {
 			<Link href={`/producto?sku=${sku}`}>
 				<a
 					style={{
-						backgroundImage: `url(https://sass.refrigeracionmc.com${pictures?.split(',')[0]})`,
 						minHeight: 170
 					}}
-					className='mb-0 bg-white border rounded bg-cover bg-center flex-1 h-full w-full flex flex-col items-end translate-y-0 hover:translate-y-2'>
+					className='mb-0 bg-white border rounded bg-cover bg-center flex-1 h-full w-full flex flex-col items-center relative justify-center translate-y-0 hover:translate-y-2'>
+						<div className="bg-white relative z-10">
+							<img src={`https://sass.refrigeracionmc.com${pictures?.split(',')[0]}`} alt="" style={{maxWidth: 220}} />
+						</div>
+					<div className="absolute top-18 border border-t-4 border-primary rounded-full h-12 w-12 animate-spin"></div>
 					{badge && (
-						<span className='self-start px-2 m-4 font-bold py bg-primary text-white text-xs rounded-full'>
+						<span className='px-2 m-4 font-bold z-20 py bg-primary text-white text-xs rounded-full absolute top-0 left-0'>
 							{badge}
 						</span>
 					)}
@@ -37,7 +39,7 @@ export const ProductCard = ({ product, badge, buttons }) => {
 				</Link>
 				<p className='text-blue-800 border-t border-b p-2 my-2 text-md font-bold text-center'>${price}</p>
 				{
-					buttons &&
+					!buttons &&
 					<div className='flex justify-between w-full items-center'>
 						{product.stock > 1 ?
 							<button

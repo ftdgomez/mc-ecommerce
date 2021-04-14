@@ -9,8 +9,9 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { API_URL } from '../constant';
 
-const register = () => {
+const register = ({ redirectto }) => {
 	const router = useRouter();
 	const [values, handleChange] = useForm({
 		name: '',
@@ -19,21 +20,26 @@ const register = () => {
 		password2: '',
 		cookies: false,
 		remember: false,
+		address: '',
+		phone: ''
 	});
 
 	const [error, setError] = useState(false);
 	const { handleUserInfo } = useContext(UserContext);
-
+    const [loading, setLoading] = useState(false)
 	const handleSubmit = async (e) => {
 		e.preventDefault();
+		setLoading(true)
 		if (
 			values.email === '' ||
 			values.password === '' ||
 			values.password2 === '' ||
-			values.name === ''
+			values.name === '' ||
+			values.phone === ''
 		) {
 			toast.error('Todos los campos son obligatorios.');
 			setError(true);
+			setLoading(false)
 		} else if (values.cookies !== 'true') {
 			toast.error(
 				'Lo siento, debes aceptar las políticas de privacidad para poder crear una cuenta.'
@@ -42,6 +48,7 @@ const register = () => {
 			toast.error('Las contraseñas no coinciden.');
 			handleChange({ password: '' });
 			handleChange({ password2: '' });
+			setLoading(false)
 		} else {
 			try {
 				const config = {
@@ -49,23 +56,37 @@ const register = () => {
 						'Content-Type': 'application/json',
 					},
 				};
-				const { data } = await axios.post(
-					`${process.env.NEXT_PUBLIC_API_URL}/api/users/`,
+				const response = await axios.post(
+					`${API_URL}ecommerce/client/`,
 					values,
 					config
 				);
+				const { data } = response
+				console.log(response)
+				if (!data){
+					alert('ha ocurrido un error inesperado...')
+				}
+				if (response.status === 200){
 				handleUserInfo(data);
 				if (values.remember === 'true') {
 					localStorage.setItem('userInfo', JSON.stringify(data));
 				}
-				router.push('/');
+				router.push('/' + redirectto ? redirectto : '');
+				}
 			} catch (error) {
 				console.log(error);
+				toast.error('Error,' + error.toString())
+				setLoading(false)
 			}
 		}
 	};
 	return (
 		<FormPage>
+			{ loading && 
+			<div className="h-screen w-full flex items-center justify-center fixed top-0 left-0 bg-black bg-opacity-80">
+				<p className="text-white">cargando...</p>
+			</div>
+			}
 			<main className='col-span-3'>
 				<div className='flex items-center justify-center w-full h-full'>
 					<FormBody handler={handleSubmit}>
@@ -79,7 +100,7 @@ const register = () => {
 						</h1>
 						<p className='mb-4 text-gray-500 text-sm'>
 							¿Ya tienes una cuenta?{' '}
-							<StyledLink to='login'>Inicia Sesión</StyledLink>
+							<StyledLink to='/login'>Inicia Sesión</StyledLink>
 						</p>
 						<FormItem
 							name='name'
@@ -98,6 +119,24 @@ const register = () => {
 							value={values.email}
 							handler={handleChange}
 							error={error && values.email === '' && error}
+						/>
+						<FormItem
+							name='phone'
+							type='text'
+							placeholder='teléfono de contacto'
+							label='Teléfono de contacto'
+							value={values.phone}
+							handler={handleChange}
+							error={error && values.phone === '' && error}
+						/>
+						<FormItem
+							name='address'
+							type='text'
+							placeholder='su dirección'
+							label='Dirección de entrega (opcional)'
+							value={values.address}
+							handler={handleChange}
+							error={error && values.phone === '' && error}
 						/>
 						<FormItem
 							name='password'
@@ -154,5 +193,14 @@ const register = () => {
 		</FormPage>
 	);
 };
+
+export async function getServerSideProps(context){
+	const redirectAddress = context.query.redirectto
+	return {
+		props: {
+			redirectto: redirectAddress || false
+		}
+	}
+}
 
 export default register;
