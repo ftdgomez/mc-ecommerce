@@ -32,7 +32,7 @@ export const ProductCard = ({ product, badge, buttons }) => {
 			</Link>
 
 			<div className='p-2 bg-white w-full mt-auto'>
-				<Link href={`/product/${sku}`}>
+				<Link href={`/producto?sku=${sku}`}>
 					<a className="">
 						<h4 className='text-sm font-medium capitalize text-gray-600'>{product_name}</h4>
 					</a>
