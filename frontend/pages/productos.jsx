@@ -5,8 +5,9 @@ import { ProductCard } from '../components/ProductCard';
 import axios from 'axios';
 import { API_URL } from '../constant';
 import {useState} from 'react';
+import { _checkAuthorizationCookie } from 'ftdgomez-utils';
 
-const productos = ({ categories, products, currentPage, currentCategory, keyword, totalPages}) => {
+const productos = ({ categories, products, currentPage, currentCategory, keyword, totalPages, userInfo}) => {
 
 	const [searchKeyword, setSearchKeyword] = useState('')
 
@@ -16,7 +17,7 @@ const productos = ({ categories, products, currentPage, currentCategory, keyword
 	}
 
 	return (
-		<MainLayout>
+		<MainLayout userInfo={userInfo}>
 			<header className="p-4 md:p-0 bg-white mb-8">
 				<div className='lg:text-center bg-white py-8'>
 					<h1 className='mt-2 text-3xl leading-8 font-extrabold tracking-tight sm:text-4xl'>
@@ -145,6 +146,7 @@ const productos = ({ categories, products, currentPage, currentCategory, keyword
 
 export async function getServerSideProps(context) {
 	try {
+		const userInfo = _checkAuthorizationCookie(context, '/');
 const query = context.query
 const currentPage = query.page ? Number(query.page) : 1;
 const currentCategory = query.cat || '';
@@ -157,7 +159,8 @@ return {
 	props: {
 		...data,
 		currentCategory,
-		keyword
+		keyword,
+		userInfo
 	}
 }
 	} catch (error) {

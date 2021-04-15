@@ -4,7 +4,7 @@ import { CartSideBar } from '../components/CartSideBar';
 import Head from 'next/head';
 import { ProductsContext } from '../context/ProductsContext';
 
-export const MainLayout = ({ children }) => {
+export const MainLayout = ({ children, userInfo }) => {
 	const [showNavBar, setShowNavBar] = useState(false);
 	const { productCart, setProductCart, showCart, setShowCart } = useContext(
 		ProductsContext
@@ -48,7 +48,7 @@ export const MainLayout = ({ children }) => {
 			</Head>
 			<div
 				onClick={() => setShowNavBar(!showNavBar)}
-				className={`h-screen bg-black opacity-70 fixed top-0 left-0 w-full z-30 ${
+				className={`h-screen bg-black opacity-70 fixed top-0 left-0 w-full z-20 ${
 					!showNavBar && 'hidden'
 				}`}></div>
 			<header className='h-20'>
@@ -83,7 +83,7 @@ export const MainLayout = ({ children }) => {
 							</div>
 						</div>
 
-						<div className='md:flex items-center'>
+						<div className='items-center'>
 							<div className={`m-navbar ${showNavBar && 'm-navbar-active'}`}>
 								<Link href='/#'>
 									<a className='m-logo'>
@@ -96,14 +96,33 @@ export const MainLayout = ({ children }) => {
 								</Link>
 								{Links.map((link, index) => (
 									<Link key={`${link.text}`} href={link.href}>
-										<a className='my-1 text-sm text-gray-700 font-medium hover:text-indigo-500 md:mx-4 md:my-0'>
+										<a className='my-1 text-sm block text-gray-700 font-medium hover:text-indigo-500 md:mx-4 md:my-0'>
 											{link.text}
 										</a>
 									</Link>
 								))}
-							</div>
+							{userInfo ? 
+							<>
+								<Link href="/client-panel">
+										<a className='my-1 lg:text-primary lg:font-bold text-sm block text-gray-700 font-medium hover:text-indigo-500 md:mx-4 md:my-0'>
+									Panel De Cliente</a></Link>	
 
-							<div className='fixed bottom-0 w-full bg-white left-0 p-4 md:relative md:p-0 flex justify-center border-t md:border-transparent md:justify-center md:block'>
+								<Link href="/logout">
+										<a className='my-1 lg:text-red-500 block text-sm text-gray-700 font-medium hover:text-indigo-500 md:mx-4 md:my-0'>
+									Cerrar Sesión</a></Link>	
+							</>
+								: 
+								<>
+								<Link href="/login">
+										<a className='my-1 lg:text-primary lg:font-bold text-sm text-gray-700 font-medium hover:text-indigo-500 md:mx-4 md:my-0'>
+									Iniciar Sesión</a></Link>	
+								<Link href="/register">
+										<a className='my-1 lg:text-primary lg:font-bold text-sm text-gray-700 font-medium hover:text-indigo-500 md:mx-4 md:my-0'>
+									Registrarse</a></Link>	
+								</>
+							}
+
+							<div className='fixed bottom-0 w-full md:w-auto bg-white left-0 p-4 md:relative md:p-0 flex justify-center border-t md:border-transparent md:justify-center md:block'>
 								<button
 									className='relative text-gray-700 hover:text-gray-600 flex items-center justify-center'
 									onClick={() => setShowCart(!showCart)}>
@@ -125,10 +144,13 @@ export const MainLayout = ({ children }) => {
 									</span>
 								</button>
 							</div>
+							</div>
+
 						</div>
 					</div>
 				</nav>
 			</header>
+
 			{showCart && <CartSideBar handler={setShowCart} showCart={showCart} />}
 			{/* BODY */}
 			<main className='bg-gray-100 pt pb-8'>{children}</main>

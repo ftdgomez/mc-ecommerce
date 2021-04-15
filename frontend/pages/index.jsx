@@ -2,15 +2,17 @@ import { MainLayout } from '../layout/MainLayout';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import Link from 'next/link';
-import { Button } from '../components/Button';
 import { ProductCard } from '../components/ProductCard';
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { ProductsContext } from '../context/ProductsContext';
 import { API_URL } from '../constant';
-
+import { validationMethods, _checkAuthorizationCookie, _fetch } from 'ftdgomez-utils';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
-export default function Home({ categories, products }) {
+const { isEmail } = validationMethods;
+
+export default function Home({ categories, products, userInfo }) {
 	const settings = {
 		dots: false,
 		infinite: true,
@@ -21,6 +23,20 @@ export default function Home({ categories, products }) {
 		autoPlay: true,
 	};
 	const { productList, setProductList } = useContext(ProductsContext);
+	const [newsletterValue, setNewsletterValue] = useState('')
+	const handleNewsletter = async (e) => {
+		e.preventDefault();
+		if (!isEmail(newsletterValue)) return;
+		try {
+			const response = await _fetch(API_URL + 'ecommerce/newsletter', 'POST', {email: newsletterValue});
+			toast.success('Bien! te has suscrito a nuestro newsletter!')
+			setNewsletterValue('')
+		} catch (error) {
+			console.error(error);
+			return
+		}
+		
+	}
 
 	useEffect(()=>{
 		setProductList(products);
@@ -28,7 +44,7 @@ export default function Home({ categories, products }) {
 
 	return (
 		<div>
-			<MainLayout>
+			<MainLayout userInfo={userInfo}>
 				<div className='hover:cursor-move'>
 					<Slider {...settings}>
 						<div>
@@ -133,12 +149,15 @@ export default function Home({ categories, products }) {
 								Latest news ,articles and updates montly delevered to your
 								inbox.
 							</p>
-							<form action='#' className='mt-2'>
+
+							<form onSubmit={handleNewsletter} className='mt-2'>
 								<div className='flex items-center'>
 									<input
 										type='email'
 										className='w-full p-2 mr-2  bg-gray-100 shadow-inner rounded-md border border-gray-400 focus:outline-none'
 										placeholder='suemail@ejemplo.com'
+										value={newsletterValue}
+										onChange={(e)=>setNewsletterValue(e.target.value)}
 										required
 									/>
 									<button className='block bg-red-600 font-bold text-white w-32 py-2 rounded shadow '>
@@ -146,6 +165,7 @@ export default function Home({ categories, products }) {
 									</button>
 								</div>
 							</form>
+
 						</div>
 					</div>
 				</section>
@@ -225,12 +245,14 @@ export default function Home({ categories, products }) {
 
 export async function getServerSideProps(context) {
 	try {
-	const indexResponse = await axios.get(API_URL + 'ecommerce/index')
-	const data = indexResponse.data
+		const indexResponse = await axios.get(API_URL + 'ecommerce/index')
+		const data = indexResponse.data
+		const userInfo = _checkAuthorizationCookie(context, '/');
 	return {
 		props: {
 			categories:data.categories,
-			products:data.products
+			products:data.products,
+			userInfo: userInfo.error ? false : userInfo
 		}
 	}
 	} catch (error) {

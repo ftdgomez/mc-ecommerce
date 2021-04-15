@@ -109,7 +109,7 @@ export const CartSideBar = ({ showCart, handler, embedded }) => {
 	return (
 		<div className={embedded ? undefined : 'flex w-full max-h-screen'}>
 			{!embedded && (
-				<div className='h-screen bg-black opacity-70 fixed top-0 left-0 w-full' style={{zIndex: 21}}></div>
+				<div onClick={()=>handler(!showCart)} className='h-screen bg-black opacity-70 fixed top-0 left-0 w-full' style={{zIndex: 21}}></div>
 			)}
 			<div
 				className={

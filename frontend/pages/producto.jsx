@@ -5,8 +5,9 @@ import { ProductsContext } from '../context/ProductsContext';
 import { ProductCard } from '../components/ProductCard';
 import { API_URL } from '../constant';
 import axios from 'axios';
+import { _checkAuthorizationCookie } from 'ftdgomez-utils';
 
-const producto = ({product, dolar, related}) => {
+const producto = ({product, dolar, related, userInfo}) => {
 	const { addToCart, setShowCart } = useContext(ProductsContext);
 
 	const handleAddToCart = (product) => {
@@ -16,7 +17,7 @@ const producto = ({product, dolar, related}) => {
 		}
 	};
 	return (
-		<MainLayout>
+		<MainLayout userInfo={userInfo}>
 			<div className="p-2"></div>
 			<div className='bg-white container py-8'>
 				<div>
@@ -97,6 +98,7 @@ const producto = ({product, dolar, related}) => {
 
 export async function getServerSideProps(context) {
 	try {
+		const userInfo = _checkAuthorizationCookie(context, '/');
 		const sku = context.query.sku
 		if (!sku) throw new Error('SKU invalid');
 		let productResponse = await axios.get(API_URL + 'ecommerce/product/' + sku );
@@ -105,7 +107,8 @@ export async function getServerSideProps(context) {
 			props: {
 				product: productResponse.data,
 				dolar: dolarResponse.data.dolar,
-				related: productResponse.data.related
+				related: productResponse.data.related,
+				userInfo: userInfo
 			}
 		}
 	} catch (error) {

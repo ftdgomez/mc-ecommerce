@@ -45,6 +45,7 @@
 	}
 	.m-navbar-active {
 		@apply h-screen bg-white z-10 fixed top-0 left-0 items-center w-2/3;
+		z-index: 333;
 	}
 	.m-navbar a {
 		width: 100%;

@@ -10,6 +10,14 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import Link from 'next/link';
 import { API_URL } from '../constant';
+import { _checkAuthorizationCookie } from 'ftdgomez-utils';
+
+function setCookie(cname, cvalue, exdays = 7) {
+	var d = new Date();
+	d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+	var expires = "expires=" + d.toUTCString();
+	document.cookie = cname + "=" + JSON.stringify(cvalue) + ";" + expires + ";path=/";
+}
 
 const login = ({ redirectto }) => {
 	const router = useRouter();
@@ -29,7 +37,7 @@ const login = ({ redirectto }) => {
 		if (values.email === '' || values.password === '') {
 			toast.error('Los campos están vacíos.');
 			setError(!error);
-		setLoading(false)
+			setLoading(false)
 		} else {
 			try {
 				const config = {
@@ -43,14 +51,13 @@ const login = ({ redirectto }) => {
 					config
 				);
 				handleUserInfo(data);
-				if (values.remember === 'true') {
-					localStorage.setItem('userInfo', JSON.stringify(data));
-				}
-				router.push('/' + redirectto ? redirectto : '');
+				localStorage.setItem('userInfo', JSON.stringify(data));
+				setCookie('userInfo', data);
+				router.push('/' + (redirectto ? redirectto : ''));
 			} catch (error) {
 				handleChange({ password: '' });
 				setError(true);
-		setLoading(false)
+				setLoading(false)
 				console.log(error);
 				toast.error('Email o contraseña inválidos.');
 			}
@@ -59,10 +66,10 @@ const login = ({ redirectto }) => {
 
 	return (
 		<FormPage>
-			{ loading && 
-			<div className="h-screen w-full flex items-center justify-center fixed top-0 left-0 bg-black bg-opacity-80">
-				<p className="text-white">cargando...</p>
-			</div>
+			{ loading &&
+				<div className="h-screen w-full flex items-center justify-center fixed top-0 left-0 bg-black bg-opacity-80">
+					<p className="text-white">cargando...</p>
+				</div>
 			}
 			<main className='col-span-3'>
 				<div className='flex items-center justify-center w-full h-full'>
@@ -117,11 +124,22 @@ const login = ({ redirectto }) => {
 	);
 };
 
-export async function getServerSideProps(context){
-	const redirectto = context.query.redireccto || ''
-	return {
-		props: {
-			redirectto
+export async function getServerSideProps(context) {
+	const userInfo = _checkAuthorizationCookie(context, 'client-panel');
+	if (!userInfo.error) {
+		return {
+			redirect: {
+				destination: '/client-panel',
+				permanent: false
+			}
+		}
+	} else {
+		const redirectto = context.query.redirectTo || ''
+		return {
+			props: {
+				redirectto
+			}
+
 		}
 	}
 }

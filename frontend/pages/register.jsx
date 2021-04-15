@@ -11,6 +11,13 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { API_URL } from '../constant';
 
+function setCookie(cname, cvalue, exdays = 7) {
+	var d = new Date();
+	d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+	var expires = "expires=" + d.toUTCString();
+	document.cookie = cname + "=" + JSON.stringify(cvalue) + ";" + expires + ";path=/";
+}
+
 const register = ({ redirectto }) => {
 	const router = useRouter();
 	const [values, handleChange] = useForm({
@@ -68,10 +75,9 @@ const register = ({ redirectto }) => {
 				}
 				if (response.status === 200){
 				handleUserInfo(data);
-				if (values.remember === 'true') {
-					localStorage.setItem('userInfo', JSON.stringify(data));
-				}
-				router.push('/' + redirectto ? redirectto : '');
+				localStorage.setItem('userInfo', JSON.stringify(data));
+				setCookie('userInfo', data);
+				router.push('/' + (redirectto ? redirectto : ''));
 				}
 			} catch (error) {
 				console.log(error);
@@ -195,7 +201,7 @@ const register = ({ redirectto }) => {
 };
 
 export async function getServerSideProps(context){
-	const redirectAddress = context.query.redirectto
+	const redirectAddress = context.query.redirectTo
 	return {
 		props: {
 			redirectto: redirectAddress || false
