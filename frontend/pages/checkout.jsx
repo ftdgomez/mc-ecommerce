@@ -13,7 +13,7 @@ const checkout = ({ stores, userInfo }) => {
 	const {productCart, setProductCart } = useContext(ProductsContext)
 	const [shipping, setShipping] = useState('')
 	const [values, setValues] = useState({
-		shippingInfo: '',
+		shippingInfo: userInfo.address ? userInfo.address : '',
 		paymentMethod: '',
 		store_id: '',
 		nota: ''
@@ -25,7 +25,6 @@ const checkout = ({ stores, userInfo }) => {
 		setLoading(true)
 		// invoice needs id, ref, payment_method, paid_at, is_online
 		// transaction needs items, currency, total, state, store_id, client_id
-		console.log(userInfo)
 		const transaction = {
 			items: productCart,
 			currency: 'usd',
@@ -34,7 +33,8 @@ const checkout = ({ stores, userInfo }) => {
 			store_id: values.store_id,
 			client_id: userInfo.id,
 			nota: values.nota,
-			shipping: shippingType === 'recodiga' ? false : true
+			shipping: shippingType === 'recogida' ? false : true,
+			shippingInfo: values.shippingInfo
 		}
 		const invoice = {
 			payment_method: values.paymentMethod,
@@ -65,6 +65,8 @@ const checkout = ({ stores, userInfo }) => {
 					</Link>
 				</div>
 			</header>
+			{
+			}
         {loading && 
           <div className="bg-black z-50 bg-opacity-80 w-full h-screen fixed top-0 left-0 flex items-center justify-center">
               <div className="absolute top-18 border border-t-4 border-primary rounded-full h-12 w-12 animate-spin"></div>
@@ -103,13 +105,13 @@ const checkout = ({ stores, userInfo }) => {
 						{userInfo &&
 							<div className='md:p-4 md:pl-12'>
 								<div className="lg:grid grid-cols-2 gap-4">
-									<button onClick={() => {setShipping('recogida'); setValues({...values, store_id: '', shippingInfo: ''})}} className="border p-4 hover:bg-primary rounded flex flex-col items-center justify-center">
+									<button onClick={() => {setShipping('recogida'); setValues({...values, store_id: ''})}} className="border p-4 hover:bg-primary rounded flex flex-col items-center justify-center">
 										<p className="text-4xl">
 											<FaStore />
 										</p>
 										<p>Recoger en tienda</p>
 									</button>
-									<button onClick={() => {setShipping('envio'); setValues({...values, store_id: '', shippingInfo: ''})}} className="border p-4 hover:bg-primary rounded flex flex-col items-center justify-center">
+									<button onClick={() => {setShipping('envio'); setValues({...values, store_id: ''})}} className="border p-4 hover:bg-primary rounded flex flex-col items-center justify-center">
 										<p className="text-4xl">
 											<FaShippingFast />
 										</p>
@@ -117,7 +119,7 @@ const checkout = ({ stores, userInfo }) => {
 									</button>
 								</div>
 								{shipping === 'envio' &&
-									<input onChange={(e) => setValues({ ...values, shippingInfo: `envio a: ${e.target.value}` })} className="border w-full px-4 py-2 text-base mt-3 block focus:border-primary" type="text" placeholder="dirección de envio" />
+									<input value={values.shippingInfo} onChange={(e) => setValues({ ...values, shippingInfo: e.target.value })} className="border w-full px-4 py-2 text-base mt-3 block focus:border-primary" type="text" placeholder="dirección de envio" />
 								}
 								{
 									shipping === 'recogida' &&

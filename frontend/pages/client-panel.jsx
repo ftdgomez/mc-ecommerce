@@ -9,7 +9,7 @@ const clientPanelPage = ({ userInfo, transactions, products, vendedores }) => {
       invoice: 'Procesando pago.',
       deliver: 'Entregado'
   }
-  const [view, setView] = useState(transactions[0]);
+  const [view, setView] = useState(transactions[0] || []);
   return (
     <>
       <header className="md:fixed top-0 flex items-center justify-between p-4 left-0 w-full">
@@ -59,6 +59,9 @@ const clientPanelPage = ({ userInfo, transactions, products, vendedores }) => {
           </nav>
           <div className="p-4 overflow-auto" style={{ maxHeight: '480px' }}>
             <p>Tu último pedido:</p>
+            {
+              transactions.length > 0 &&
+              <>
              {[view].map((m) => (
               <div key={m._id}>
                 <p className="border px-2 py-1 rounded mt-4">ref: {m._id}</p>
@@ -67,23 +70,29 @@ const clientPanelPage = ({ userInfo, transactions, products, vendedores }) => {
                 </p>
                 <p className="border px-2 py-1 rounded mt-4">Detalles:</p>
                 <div className="border-b p-4">
-                    <table>
+                    <table className="w-full">
+                      <thead>
+
                         <tr>
                             <th className="text-left">Producto</th>
-                            <th>Cantidad</th>
-                            <th>Precio(UND)</th>
+                            <th className="text-left">Cantidad</th>
+                            <th className="text-left">Precio(UND)</th>
                             <th>Total</th>
                         </tr>
+                      </thead>
+                      <tbody>
+
                   {m.items.map((x) => (
                     <tr key={x.id} className="border-b">
                        <td className="capitalize">{x.product_name}</td>
                        <td>{x.qty}</td>
-                       <td>{x.price}</td>
-                       <td>{(Number(x.price) * Number(x.qty)).toFixed(2)}</td>
+                       <td>${x.price}</td>
+                       <td className="text-center">${(Number(x.price) * Number(x.qty)).toFixed(2)}</td>
                       {/* {products[x.product].nombre} x ( cant {x.qty} UND ) = ${' '}
                       {(products[x.product].precio * x.qty).toFixed(2)} */}
                     </tr>
                   ))}
+                      </tbody>
                     </table>
 
                   {/* <p className="text-right border-b p-2">
@@ -109,6 +118,9 @@ const clientPanelPage = ({ userInfo, transactions, products, vendedores }) => {
                 )} */}
               </div>
             ))}
+
+              </>
+            }
           </div>
         </div>
       </div>
