@@ -79,7 +79,7 @@ export default function Home({ categories, products, userInfo }) {
 						</div>
 					</div>
 				</div>
-				<main className='m-4 max-w-7xl mx-auto md:grid grid-cols-12 gap-4'>
+{/* 				<main className='m-4 max-w-7xl mx-auto md:grid grid-cols-12 gap-4'>
 					<div className='col-span-3 bg-white p-4 border rounded mb-4 md:mb-0'>
 						<h2 className='font-bold text-lg pb-2 border-b'>Categorías</h2>
 						<Link href='/productos'>
@@ -91,7 +91,7 @@ export default function Home({ categories, products, userInfo }) {
 							categories.map(c => (
 						<Link href={`/productos?cat=${c.id}`} key={`cat-${c.id}`}>
 							<a className='text-gray-500 capitalize hover:text-gray-800 my-4 text-sm block'>
-						{c.category_name}
+						{c.categoryName}
 							</a>
 						</Link>
 							))
@@ -101,7 +101,14 @@ export default function Home({ categories, products, userInfo }) {
 						{productList.slice(0, 9).map((item) => (
 							<ProductCard key={item.id} product={item} />
 						))}
-					</div>
+						
+					
+ 					</div>
+				</main> */}
+
+				<main className="bg-white max-w-7xl mx-auto">
+					<p className="text-center py-16">Por labores de mantenimiento,
+					esta sección está dehabilitada temporalmente.</p>
 				</main>
 
 				<section className='bg-gray-50'>
@@ -245,13 +252,12 @@ export default function Home({ categories, products, userInfo }) {
 
 export async function getServerSideProps(context) {
 	try {
-		const indexResponse = await axios.get(API_URL + 'ecommerce/index')
-		const data = indexResponse.data
+		const {data} = await axios.get(API_URL + 'ecommerce')
 		const userInfo = _checkAuthorizationCookie(context, '/');
 	return {
 		props: {
 			categories:data.categories,
-			products:data.products,
+			products: false,
 			userInfo: userInfo.error ? false : userInfo
 		}
 	}

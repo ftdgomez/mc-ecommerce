@@ -145,6 +145,12 @@ const productos = ({ categories, products, currentPage, currentCategory, keyword
 };
 
 export async function getServerSideProps(context) {
+	return {
+		redirect: {
+			destination: '/',
+			permanent: false
+		}
+	}
 	try {
 		const userInfo = _checkAuthorizationCookie(context, '/');
 const query = context.query
