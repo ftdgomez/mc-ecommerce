@@ -79,7 +79,7 @@ export default function Home({ categories, products, userInfo }) {
 						</div>
 					</div>
 				</div>
-{/* 				<main className='m-4 max-w-7xl mx-auto md:grid grid-cols-12 gap-4'>
+				<main className='m-4 max-w-7xl mx-auto md:grid grid-cols-12 gap-4'>
 					<div className='col-span-3 bg-white p-4 border rounded mb-4 md:mb-0'>
 						<h2 className='font-bold text-lg pb-2 border-b'>Categorías</h2>
 						<Link href='/productos'>
@@ -89,14 +89,14 @@ export default function Home({ categories, products, userInfo }) {
 						</Link>
 						{
 							categories.map(c => (
-						<Link href={`/productos?cat=${c.id}`} key={`cat-${c.id}`}>
-							<a className='text-gray-500 capitalize hover:text-gray-800 my-4 text-sm block'>
-						{c.categoryName}
-							</a>
-						</Link>
+								<Link href={`/productos?cat=${c.id}`} key={`cat-${c.id}`}>
+									<a className='text-gray-500 capitalize hover:text-gray-800 my-4 text-sm block'>
+										{c.categoryName}
+									</a>
+								</Link>
 							))
 						}
-										</div>
+					</div>
 					<div className='col-span-9 md:grid grid-cols-3 gap-4 p-4 md:p-0'>
 						{productList.slice(0, 9).map((item) => (
 							<ProductCard key={item.id} product={item} />
@@ -104,12 +104,12 @@ export default function Home({ categories, products, userInfo }) {
 						
 					
  					</div>
-				</main> */}
+				</main>
 
-				<main className="bg-white max-w-7xl mx-auto">
+				{/* <main className="bg-white max-w-7xl mx-auto">
 					<p className="text-center py-16">Por labores de mantenimiento,
 					esta sección está dehabilitada temporalmente.</p>
-				</main>
+				</main> */}
 
 				<section className='bg-gray-50'>
 					<div className='max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8 lg:flex lg:items-center lg:justify-between'>
@@ -257,7 +257,7 @@ export async function getServerSideProps(context) {
 	return {
 		props: {
 			categories:data.categories,
-			products: false,
+			products: data.products,
 			userInfo: userInfo.error ? false : userInfo
 		}
 	}

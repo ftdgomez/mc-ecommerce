@@ -39,8 +39,9 @@ const productos = ({ categories, products, currentPage, currentCategory, keyword
 			}
 	
 			{
-				currentCategory && <div className="container"><h3 className="text-center text-2xl capitalize p-4 border font-bold bg-white">{categories.filter(c => c.id === Number(currentCategory))[0].category_name}</h3></div>
+				currentCategory && <div className="container"><h3 className="text-center text-2xl capitalize p-4 border font-bold bg-white">{categories.filter(c => c.category_id === Number(currentCategory))[0].categoryName}</h3></div>
 			}
+
 			<aside className='max-w-6xl m-4 md:m-0 md:mx-auto md:mb-8'>
 				<form onSubmit={handleSearch} className='h-full flex rounded-lg'>
 					<input
@@ -73,9 +74,9 @@ const productos = ({ categories, products, currentPage, currentCategory, keyword
 						</Link>
 						{
 							categories.map(c => (
-						<Link href={`/productos?cat=${c.id}`} key={`cat-${c.id}`}>
+						<Link href={`/productos?cat=${c.category_id}`} key={`cat-${c.category_id}`}>
 							<a className='text-gray-500 capitalize hover:text-gray-800 my-4 text-sm block'>
-						{c.category_name}
+						{c.categoryName}
 							</a>
 						</Link>
 							))
@@ -145,30 +146,24 @@ const productos = ({ categories, products, currentPage, currentCategory, keyword
 };
 
 export async function getServerSideProps(context) {
-	return {
-		redirect: {
-			destination: '/',
-			permanent: false
-		}
-	}
 	try {
 		const userInfo = _checkAuthorizationCookie(context, '/');
-const query = context.query
-const currentPage = query.page ? Number(query.page) : 1;
-const currentCategory = query.cat || '';
-const keyword = query.search || false;
+		const query = context.query
+		const currentPage = query.page ? Number(query.page) : 1;
+		const currentCategory = query.cat || '';
+		const keyword = query.search || false;
 
-const productsURL = `${API_URL}ecommerce/index${currentPage ? '?page=' + currentPage : '?page=1'}${currentCategory ? `&cat=${currentCategory}` : ''}${keyword ? `&search=${keyword}` : ''}`
-const {data} = await axios.get(productsURL)
-console.log(Object.keys(data))
-return {
-	props: {
-		...data,
-		currentCategory,
-		keyword,
-		userInfo
-	}
-}
+		const productsURL = `${API_URL}ecommerce/products${currentPage ? '?page=' + currentPage : '?page=1'}${currentCategory ? `&cat=${currentCategory}` : ''}${keyword ? `&search=${keyword}` : ''}`
+		const { data } = await axios.get(productsURL)
+		return {
+			props: {
+				...data,
+				currentPage,
+				currentCategory,
+				keyword,
+				userInfo
+			}
+		}
 	} catch (error) {
 		console.log(error);
 		return  {props:{}}

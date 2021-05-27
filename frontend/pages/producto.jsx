@@ -30,20 +30,23 @@ const producto = ({product, dolar, related, userInfo}) => {
 
 				<div className='block md:grid grid-cols-2 mt-4'>
 					<div className='border'>
-						<img className='w-full' src={'https://sass.refrigeracionmc.com' + product.pictures.split(',')[0]} />
+						<img className='w-full' src={'https://sass.refrigeracionmc.com' + product.productImages.split(',')[0]} />
 					</div>
 					<div className='p-8 flex flex-col justify-center'>
 						<h1 className='font-extrabold capitalize text-2xl mb-2 text-gray-700'>
-							{product.product_name}
+							{product.productName}
 						</h1>
 						<h4 className='font-bold text-xl py-2 border-b text-gray-700'>
-							${product.price}
-							<span className="text-sm ml-4">(Bsf: {new Intl.NumberFormat("de-DE").format(Number(product.price) * dolar)})</span>
+							${product.productPrice}
+							{
+								dolar &&
+								<span className="text-sm ml-4">(Bsf: {new Intl.NumberFormat("de-DE").format(Number(product.productPrice) * dolar)})</span>
+							}
 						</h4>
 						<p className='pt-2 mb-4 text-sm'>
-							{product.description}	
+							{product.productDescription}
 						</p>
-					{product.stock > 0 ?
+					{/* {product.stock > 0 ?
 					<button
 						onClick={() => handleAddToCart(product)}
 						className='bg-primary text-sm px-4 py-2 text-white rounded shadow flex items-center hover:bg-primary hover:text-white '>
@@ -63,8 +66,8 @@ const producto = ({product, dolar, related, userInfo}) => {
 						className='bg-red-300 text-sm px-4 py-2 text-gray-800 rounded shadow flex items-center'>
 						Fuera de stock
 					</div>
-				}
-						<a className="border px-4 py-2 flex items-center justify-between mt-4 text-sm rounded text-white bg-green-500" href={`https://wa.me/584241217659?text=${encodeURIComponent(`Hola! me gustaría tener más información acerca de ${product.product_name}.`)}`} target="_blank">
+				} */}
+						<a className="border px-4 py-2 flex items-center justify-between mt-4 text-sm rounded text-white bg-green-500" href={`https://wa.me/584241217659?text=${encodeURIComponent(`Hola! me gustaría tener más información acerca de "${product.productName}" sku: ${product.productSku}.`)}`} target="_blank">
 							Consultar por whatsapp
 						<svg
 							className='h-7 text-green-500'
@@ -101,12 +104,13 @@ export async function getServerSideProps(context) {
 		const userInfo = _checkAuthorizationCookie(context, '/');
 		const sku = context.query.sku
 		if (!sku) throw new Error('SKU invalid');
-		let productResponse = await axios.get(API_URL + 'ecommerce/product/' + sku );
-		const dolarResponse = await axios.get(API_URL + 'dolar');
+		let productResponse = await axios.get(API_URL + 'ecommerce/' + sku );
+		// const dolarResponse = await axios.get(API_URL + 'dolar');
+		console.log('product -> ',productResponse.data.product)
 		return {
 			props: {
-				product: productResponse.data,
-				dolar: dolarResponse.data.dolar,
+				product: productResponse.data.product,
+				// dolar: dolarResponse.data.dolar,
 				related: productResponse.data.related,
 				userInfo: userInfo
 			}

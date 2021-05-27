@@ -2,8 +2,13 @@ import React, { useContext } from 'react';
 import Link from 'next/link';
 import { ProductsContext } from '../context/ProductsContext';
 
-export const ProductCard = ({ product, badge, buttons }) => {
-	const { pictures, product_name, price, sku } = product;
+export const ProductCard = ({ product, badge, buttons = false }) => {
+	const {
+		 productImages: pictures,
+		 productName: product_name,
+		 productPrice: price,
+		 productSku: sku
+	} = product;
 	const { addToCart, setShowCart } = useContext(ProductsContext);
 	const handleAddToCart = (product) => {
 		const added = addToCart({ ...product, qty: 1 });
@@ -39,7 +44,7 @@ export const ProductCard = ({ product, badge, buttons }) => {
 				</Link>
 				<p className='text-blue-800 border-t border-b p-2 my-2 text-md font-bold text-center'>${price}</p>
 				{
-					!buttons &&
+					buttons &&
 					<div className='flex justify-between w-full items-center'>
 						{product.stock > 1 ?
 							<button
@@ -64,7 +69,7 @@ export const ProductCard = ({ product, badge, buttons }) => {
 						}
 
 
-						<a href={`https://wa.me/584241217659?text=${encodeURIComponent(`Hola! me gustaría tener más información acerca de ${product_name}.`)}`} target="_blank" className=''>
+						<a href={`https://wa.me/584241217659?text=${encodeURIComponent(`Hola! me gustaría tener más información acerca de "${product_name}" sku: ${sku}.`)}`} target="_blank" className=''>
 							<svg
 								className='h-7 text-green-500'
 								fill='currentColor'
