@@ -3,16 +3,15 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import Link from 'next/link';
 import { ProductCard } from '../components/ProductCard';
-import { useContext, useEffect, useState } from 'react';
-import { ProductsContext } from '../context/ProductsContext';
-import { API_URL } from '../constant';
+import { useState } from 'react';
+import { API_URL, USER_COOKIE } from '../constant';
 import { validationMethods, _checkAuthorizationCookie, _fetch } from 'ftdgomez-utils';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
 const { isEmail } = validationMethods;
 
-export default function Home({ categories, products, userInfo }) {
+export default function Home({ categories, products: productList, userInfo }) {
 	const settings = {
 		dots: false,
 		infinite: true,
@@ -22,7 +21,6 @@ export default function Home({ categories, products, userInfo }) {
 		arrows: false,
 		autoPlay: true,
 	};
-	const { productList, setProductList } = useContext(ProductsContext);
 	const [newsletterValue, setNewsletterValue] = useState('')
 	const handleNewsletter = async (e) => {
 		e.preventDefault();
@@ -37,11 +35,6 @@ export default function Home({ categories, products, userInfo }) {
 		}
 		
 	}
-
-	useEffect(()=>{
-		setProductList(products);
-	}, [])
-
 	return (
 		<div>
 			<MainLayout userInfo={userInfo}>
@@ -89,7 +82,7 @@ export default function Home({ categories, products, userInfo }) {
 						</Link>
 						{
 							categories.map(c => (
-								<Link href={`/productos?cat=${c.id}`} key={`cat-${c.id}`}>
+								<Link href={`/productos?cat=${c.category_id}`} key={`cat-${c.category_id}`}>
 									<a className='text-gray-500 capitalize hover:text-gray-800 my-4 text-sm block'>
 										{c.categoryName}
 									</a>
@@ -99,10 +92,8 @@ export default function Home({ categories, products, userInfo }) {
 					</div>
 					<div className='col-span-9 md:grid grid-cols-3 gap-4 p-4 md:p-0'>
 						{productList.slice(0, 9).map((item) => (
-							<ProductCard key={item.id} product={item} />
+							<ProductCard key={item.product_id} product={item} buttons={true} />
 						))}
-						
-					
  					</div>
 				</main>
 
@@ -253,12 +244,13 @@ export default function Home({ categories, products, userInfo }) {
 export async function getServerSideProps(context) {
 	try {
 		const {data} = await axios.get(API_URL + 'ecommerce')
-		const userInfo = _checkAuthorizationCookie(context, '/');
+		const userInfo = context.req.cookies[USER_COOKIE] || false;
+		console.log(!userInfo ? 'user is not logged in' : 'user is logged in');
 	return {
 		props: {
 			categories:data.categories,
 			products: data.products,
-			userInfo: userInfo.error ? false : userInfo
+			userInfo: userInfo
 		}
 	}
 	} catch (error) {

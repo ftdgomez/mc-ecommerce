@@ -9,7 +9,8 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { API_URL } from '../constant';
+import { API_URL, USER_COOKIE } from '../constant';
+import { _fetch } from 'ftdgomez-utils';
 
 function setCookie(cname, cvalue, exdays = 7) {
 	var d = new Date();
@@ -20,72 +21,73 @@ function setCookie(cname, cvalue, exdays = 7) {
 
 const register = ({ redirectto }) => {
 	const router = useRouter();
-	const [values, handleChange] = useForm({
-		name: '',
-		email: '',
-		password: '',
-		password2: '',
-		cookies: false,
+	const [values, setValues] = useState({
+		clientName: '',
+		clientEmail: '',
+		clientPassword: '',
+		clientPassword2: '',
+		privacy: false,
 		remember: false,
-		address: '',
-		phone: ''
+		clientAddress: '',
+		clientPhone: ''
 	});
 
-	const [error, setError] = useState(false);
-	const { handleUserInfo } = useContext(UserContext);
     const [loading, setLoading] = useState(false)
+
 	const handleSubmit = async (e) => {
 		e.preventDefault();
+		const {
+			clientEmail,
+			clientName,
+			clientPhone,
+			clientAddress,
+			clientPassword,
+			clientPassword2,
+			remember
+		} = values
 		setLoading(true)
-		if (
-			values.email === '' ||
-			values.password === '' ||
-			values.password2 === '' ||
-			values.name === '' ||
-			values.phone === ''
-		) {
-			toast.error('Todos los campos son obligatorios.');
-			setError(true);
+		if ([clientEmail, clientName, clientPassword, clientPassword2, clientPhone].indexOf('') >= 0) {
+			toast.error('Faltan campos obligatorios.');
 			setLoading(false)
-		} else if (values.cookies !== 'true') {
+			return;
+		} 
+		
+		if (!values.privacy) {
 			toast.error(
 				'Lo siento, debes aceptar las políticas de privacidad para poder crear una cuenta.'
 			);
-		} else if (values.password !== values.password2) {
-			toast.error('Las contraseñas no coinciden.');
-			handleChange({ password: '' });
-			handleChange({ password2: '' });
-			setLoading(false)
-		} else {
-			try {
-				const config = {
-					headers: {
-						'Content-Type': 'application/json',
-					},
-				};
-				const response = await axios.post(
-					`${API_URL}ecommerce/client/`,
-					values,
-					config
-				);
-				const { data } = response
-				console.log(response)
-				if (!data){
-					alert('ha ocurrido un error inesperado...')
-				}
-				if (response.status === 200){
-				handleUserInfo(data);
-				localStorage.setItem('userInfo', JSON.stringify(data));
-				setCookie('userInfo', data);
-				router.push('/' + (redirectto ? redirectto : ''));
-				}
-			} catch (error) {
-				console.log(error);
-				toast.error('Error,' + error.toString())
-				setLoading(false)
-			}
 		}
+		
+		if (clientPassword2 !== clientPassword) {
+			toast.error('Las contraseñas no coinciden.');
+			setValues({...values, clientPassword: '', clientPassword2: '' });
+			setLoading(false)
+		}
+
+		try {
+			delete values.clientPassword2
+			const res = await _fetch(API_URL + 'clients?ecommerce=true', 'POST', values);
+			console.log(res)
+			if (res.data.error){
+				if (res.data.error.includes('clients_clientemail_unique')){
+					return toast.error('No puedes utilizar ese email.');
+				}
+				console.log(res.data.error)
+				return toast.error('Error, revisa los datos y vuelve a intentarlo.')
+			}
+			if (remember)
+			{
+				localStorage.setItem(USER_COOKIE, JSON.stringify(res.data));
+				setCookie(USER_COOKIE, res.data);
+				router.push('/', (redirectto ? redirectto : ''));
+			}
+		} catch (error) {
+			console.log(error);
+			toast.error('Error,' + error.toString())
+		}
+		setLoading(false)
 	};
+
 	return (
 		<FormPage>
 			{ loading && 
@@ -109,68 +111,62 @@ const register = ({ redirectto }) => {
 							<StyledLink to='/login'>Inicia Sesión</StyledLink>
 						</p>
 						<FormItem
-							name='name'
+							name='clientName'
 							type='text'
-							placeholder='John Doe'
+							placeholder='Su nombre'
 							label='Su Nombre'
-							value={values.name}
-							handler={handleChange}
-							error={error && values.name === '' && error}
+							value={values.clientName}
+							handler={(e) => setValues({...values, [e.target.name]: e.target.value})}
 						/>
 						<FormItem
-							name='email'
+							name='clientEmail'
 							type='email'
 							placeholder='example@domain.com'
 							label='Su Email'
-							value={values.email}
-							handler={handleChange}
-							error={error && values.email === '' && error}
+							value={values.clientEmail}
+handler={(e) => setValues({...values, [e.target.name]: e.target.value})}
 						/>
 						<FormItem
-							name='phone'
+							name='clientPhone'
 							type='text'
 							placeholder='teléfono de contacto'
 							label='Teléfono de contacto'
-							value={values.phone}
-							handler={handleChange}
-							error={error && values.phone === '' && error}
+							value={values.clientPhone}
+handler={(e) => setValues({...values, [e.target.name]: e.target.value})}
 						/>
 						<FormItem
-							name='address'
+							name='clientAddress'
 							type='text'
 							placeholder='su dirección'
 							label='Dirección de entrega (opcional)'
-							value={values.address}
-							handler={handleChange}
-							error={error && values.phone === '' && error}
+							value={values.clientAddress}
+handler={(e) => setValues({...values, [e.target.name]: e.target.value})}
 						/>
 						<FormItem
-							name='password'
+							name='clientPassword'
 							type='password'
 							placeholder='Escriba aquí su contraseña'
 							label='Su Contraseña'
-							value={values.password}
-							handler={handleChange}
-							error={error && values.password === '' && error}
+							value={values.clientPassword}
+							handler={(e) => setValues({...values, [e.target.name]: e.target.value})}
 						/>
 						<FormItem
-							name='password2'
+							name='clientPassword2'
 							type='password'
 							placeholder='Repetir Contraseña'
 							label='Repetir Contraseña'
-							value={values.password2}
-							handler={handleChange}
-							error={error && values.password2 === '' && error}
+							value={values.clientPassword2}
+							handler={(e) => setValues({...values, [e.target.name]: e.target.value})}
 						/>
 						<div className='flex items-center'>
 							<FormItem
-								name='cookies'
+								name='privacy'
 								type='checkbox'
-								handler={handleChange}
+								handler={(e) => setValues({...values, [e.target.name]: !values[e.target.name]})}
 								value={!values.cookies}
 							/>
 							<label
-								htmlFor='cookies'
+								htmlFor='privacy'
 								className='ml-2 mb-4 block text-sm text-gray-600'>
 								Acepto las{' '}
 								<StyledLink to='/politicas-de-privacidad'>
@@ -183,7 +179,7 @@ const register = ({ redirectto }) => {
 								name='remember'
 								type='checkbox'
 								value={!values.remember}
-								handler={handleChange}
+								handler={(e) => setValues({...values, [e.target.name]: !values[e.target.name]})}
 							/>
 							<label
 								htmlFor='remember'

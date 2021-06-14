@@ -2,48 +2,66 @@ import React, { useState, useContext, useEffect } from 'react';
 import Link from 'next/link';
 import { ProductsContext } from '../context/ProductsContext';
 
-const ProductItem = ({ product, handleDelete }) => {
+const ProductItem = ({ product }) => {
 	const { productCart, setProductCart } = useContext(ProductsContext);
-	const [count, setCount] = useState(() => {
-		return product.qty ? product.qty : 1;
-	});
-	const { product_name, price, pictures } = product;
-	const handleProductQtyChange = (qty, product) => {
-		setCount(qty);
-		const productListUpdated = productCart.map((p) =>
-			p.id === product.id ? { ...p, ['qty']: qty } : p
-		);
-		setProductCart(productListUpdated);
-		localStorage.setItem('productCart', JSON.stringify(productListUpdated));
-	};
+
+	const { productName, productPrice, productImages, qty, product_id, stock } = product;
+
+	const handler = {
+		update: (arr) => {
+			setProductCart(arr)
+			window.localStorage.setItem(
+				'mc_productCart',
+				JSON.stringify(arr),
+			  );
+		},
+		add: () => {
+			if (qty >= stock) return;
+			const arr = productCart.map(f => f.product_id === product_id ? {...f, qty: f.qty + 1} : f)
+			handler.update(arr)
+		},
+		remove: () => {
+			if (qty < 2) return;
+			const arr = productCart.map(f => f.product_id === product_id ? {...f, qty: f.qty - 1} : f)
+			handler.update(arr)
+		},
+		set: (e) => {
+			if (Number(e.target.value) >= stock || Number(e.target.value) < 2) return console.log('retornó');
+			const arr = productCart.map(f => f.product_id === product_id ? {...f, qty: Number(e.target.value)} : f)
+			handler.update(arr)
+		},
+		delete: () => {
+			const arr = productCart.filter(f => f.product_id !== product_id);
+			handler.update(arr);
+		}
+	}
+
 	return (
 		<li className='grid grid-cols-4 gap-4 border m-4 bg-white shadow'>
 			<div
-				className='h-20 w-20 bg-cover bg-center flex items-center jsutify-center relative'>
-						<div className="bg-white relative z-10">
-							<img src={`https://sass.refrigeracionmc.com${pictures?.split(',')[0]}`} alt="" />
-						</div>
-					<div className="absolute top-8 left-8 border border-t-4 border-primary rounded-full h-4 w-4 animate-spin"></div>
-				</div>
+			className='h-20 w-20 bg-cover bg-center flex items-center jsutify-center relative border-r'>
+					<div className="bg-white relative z-10">
+						<img className="p-2" src={`https://sass.refrigeracionmc.com${productImages?.split(',')[0]}`} alt="" />
+					</div>
+				<div className="absolute top-8 left-8 border border-t-4 border-primary rounded-full h-4 w-4 animate-spin"></div>
+			</div>
 
 			<div className='col-span-2 grid grid-rows-2'>
-				<h4 className='font-bold text-sm capitalize overflow-hidden h-10'>{product_name}</h4>
+				<h4 className='font-bold text-sm capitalize overflow-hidden h-10'>{productName}</h4>
 				<div className='grid grid-cols-3 items-center w-20 text-center'>
 					<button
-						onClick={() =>
-							count > 1 && handleProductQtyChange(count - 1, product)
-						}
+						onClick={handler.remove}
 						className='border rounded px-2 p'>
 						-
 					</button>
 					<input
 						className='text-center border border-gray-200 p-0'
 						type='text'
-						value={count}
-						onChange={(e) => handleProductQtyChange(count, product)}
+						value={qty}
+						onChange={handler.set}
 					/>
 					<button
-						onClick={() => handleProductQtyChange(count + 1, product)}
+						onClick={handler.add}
 						className='border rounded px-2 p'>
 						+
 					</button>
@@ -51,11 +69,11 @@ const ProductItem = ({ product, handleDelete }) => {
 			</div>
 			<div className='flex flex-col justify-between space-y-2 border-l'>
 				<p className='text-right font-bold border-b p-2'>
-					${price} {count > 1 && `x ${count}`}
+					${productPrice} x {qty}
 				</p>
 				<button
 					className='flex item-center h-full justify-end px-2'
-					onClick={() => handleDelete(product)}>
+					onClick={handler.delete}>
 					<svg
 						width='24'
 						height='24'
@@ -95,14 +113,13 @@ const ProductItem = ({ product, handleDelete }) => {
 };
 
 export const CartSideBar = ({ showCart, handler, embedded }) => {
-	const { productCart, removeFromCart, setProductCart } = useContext(ProductsContext);
+	const { productCart, setProductCart } = useContext(ProductsContext);
 
 	useEffect(()=>{
-		if (!productCart || productCart.length < 1){
-			const products = window.localStorage.getItem('productCart');
-			if (products){
-				setProductCart(JSON.parse(products));
-			}
+		const products = window.localStorage.getItem('mc_productCart');
+		console.log(products)
+		if (products){
+			setProductCart(JSON.parse(products));
 		}
 	},[])
 
@@ -169,20 +186,21 @@ export const CartSideBar = ({ showCart, handler, embedded }) => {
 						</p>
 					) : (
 						productCart.map((p) => (
-							<ProductItem key={p.id} product={p} handleDelete={removeFromCart} />
+							<ProductItem key={p.product_id} product={p} />
 						))
 					)}
 				</div>
 				<div className='mt-auto bg-white'>
-					{/* 					<div className='flex justify-between items-center border-t p-4'>
-						<p className='font-bold'>Subtotal:</p>
-						<p className='font-bold'>100.00$</p>
-					</div>
-					<div className='flex justify-between items-center border-t p-4'>
-						<p>Descuento:</p>
-						<p>Cupón: 5%</p>
-					</div>
- */}
+					{/* 					
+						<div className='flex justify-between items-center border-t p-4'>
+							<p className='font-bold'>Subtotal:</p>
+							<p className='font-bold'>100.00$</p>
+						</div>
+						<div className='flex justify-between items-center border-t p-4'>
+							<p>Descuento:</p>
+							<p>Cupón: 5%</p>
+						</div>
+					*/}
 					{productCart.length > 0 && (
 						<div>
 							<div className='flex justify-between items-center border py-2 px-4 m-4'>
@@ -191,7 +209,7 @@ export const CartSideBar = ({ showCart, handler, embedded }) => {
 									$
 									{productCart.reduce(
 										(total, product) =>
-											total + Number(product.price) * Number(product.qty),
+											total + Number(product.productPrice) * Number(product.qty),
 										0
 									)}
 								</p>

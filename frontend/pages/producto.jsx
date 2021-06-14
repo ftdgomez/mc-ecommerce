@@ -3,7 +3,7 @@ import { MainLayout } from '../layout/MainLayout';
 import Link from 'next/link';
 import { ProductsContext } from '../context/ProductsContext';
 import { ProductCard } from '../components/ProductCard';
-import { API_URL } from '../constant';
+import { API_URL, USER_COOKIE } from '../constant';
 import axios from 'axios';
 import { _checkAuthorizationCookie } from 'ftdgomez-utils';
 
@@ -46,7 +46,7 @@ const producto = ({product, dolar, related, userInfo}) => {
 						<p className='pt-2 mb-4 text-sm'>
 							{product.productDescription}
 						</p>
-					{/* {product.stock > 0 ?
+					{product.stock > 0 ?
 					<button
 						onClick={() => handleAddToCart(product)}
 						className='bg-primary text-sm px-4 py-2 text-white rounded shadow flex items-center hover:bg-primary hover:text-white '>
@@ -66,7 +66,7 @@ const producto = ({product, dolar, related, userInfo}) => {
 						className='bg-red-300 text-sm px-4 py-2 text-gray-800 rounded shadow flex items-center'>
 						Fuera de stock
 					</div>
-				} */}
+				}
 						<a className="border px-4 py-2 flex items-center justify-between mt-4 text-sm rounded text-white bg-green-500" href={`https://wa.me/584241217659?text=${encodeURIComponent(`Hola! me gustaría tener más información acerca de "${product.productName}" sku: ${product.productSku}.`)}`} target="_blank">
 							Consultar por whatsapp
 						<svg
@@ -101,7 +101,8 @@ const producto = ({product, dolar, related, userInfo}) => {
 
 export async function getServerSideProps(context) {
 	try {
-		const userInfo = _checkAuthorizationCookie(context, '/');
+		const userInfo = context.req.cookies[USER_COOKIE] || false;
+		console.log(!userInfo ? 'user is not logged in' : 'user is logged in');
 		const sku = context.query.sku
 		if (!sku) throw new Error('SKU invalid');
 		let productResponse = await axios.get(API_URL + 'ecommerce/' + sku );

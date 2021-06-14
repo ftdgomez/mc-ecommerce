@@ -1,16 +1,15 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { FormBody, FormItem, FormPage } from '../components/Form';
 import { Button } from '../components/Button';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { StyledLink } from '../components/StyledLink';
 import { useForm } from '../hooks/useForm';
-import { UserContext } from '../context/userContext';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import Link from 'next/link';
-import { API_URL } from '../constant';
-import { _checkAuthorizationCookie } from 'ftdgomez-utils';
+import { API_URL, USER_COOKIE } from '../constant';
+import { _checkAuthorizationCookie, _fetch } from 'ftdgomez-utils';
 
 function setCookie(cname, cvalue, exdays = 7) {
 	var d = new Date();
@@ -22,45 +21,36 @@ function setCookie(cname, cvalue, exdays = 7) {
 const login = ({ redirectto }) => {
 	const router = useRouter();
 	const [loading, setLoading] = useState(false);
-	const [values, handleChange] = useForm({
+	const [values, setValues] = useForm({
 		email: '',
 		password: '',
 		remember: false,
 	});
-
 	const [error, setError] = useState(false);
-	const { handleUserInfo } = useContext(UserContext);
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		setLoading(true)
 		if (values.email === '' || values.password === '') {
 			toast.error('Los campos están vacíos.');
-			setError(!error);
 			setLoading(false)
-		} else {
-			try {
-				const config = {
-					headers: {
-						'Content-Type': 'application/json',
-					},
-				};
-				const { data } = await axios.post(
-					`${API_URL}ecommerce/auth`,
-					values,
-					config
-				);
-				handleUserInfo(data);
-				localStorage.setItem('userInfo', JSON.stringify(data));
-				setCookie('userInfo', data);
-				router.push('/' + (redirectto ? redirectto : ''));
-			} catch (error) {
-				handleChange({ password: '' });
-				setError(true);
-				setLoading(false)
-				console.log(error);
-				toast.error('Email o contraseña inválidos.');
-			}
+			return;
+		}
+		try {
+			const res = await _fetch(API_URL + 'auth?ecommerce=true', 'POST', {
+				username:  values.email,
+				password: values.password
+			});
+			console.log(res)
+
+			localStorage.setItem(USER_COOKIE, JSON.stringify(res));
+			setCookie(USER_COOKIE, res);
+			router.push('/' + (redirectto ? redirectto : ''));
+		} catch (error) {
+			setValues({...values, password: '' });
+			setLoading(false)
+			console.log(error);
+			toast.error('Email o contraseña inválidos.');
 		}
 	};
 
@@ -79,7 +69,7 @@ const login = ({ redirectto }) => {
 								<Image src='/logo.svg' height={123} width={260} />
 							</a>
 						</Link>
-						<h1 className='text-xl text-gray-700 font-bold'>¡Hola de nuevo!</h1>
+						<h1 className='text-xl text-gray-700 font-bold'>¡Qué gusto tenerte por aquí!</h1>
 						<p className='mb-4 text-gray-500 text-sm'>
 							¿No tienes una cuenta?{' '}
 							<StyledLink to='/register'>Regístrate</StyledLink>
@@ -90,7 +80,7 @@ const login = ({ redirectto }) => {
 							placeholder='example@domain.com'
 							label='Su Email'
 							value={values.email}
-							handler={handleChange}
+							handler={setValues}
 							error={error && values.email === '' && error}
 						/>
 						<FormItem
@@ -99,7 +89,7 @@ const login = ({ redirectto }) => {
 							placeholder='************'
 							label='Su Contraseña'
 							value={values.password}
-							handler={handleChange}
+							handler={setValues}
 							error={error && values.password === '' && error}
 						/>
 						<div className='flex items-center'>
@@ -107,7 +97,7 @@ const login = ({ redirectto }) => {
 								name='remember'
 								type='checkbox'
 								value={!values.cookies}
-								handler={handleChange}
+								handler={setValues}
 							/>
 							<label
 								htmlFor='remember'
@@ -125,7 +115,7 @@ const login = ({ redirectto }) => {
 };
 
 export async function getServerSideProps(context) {
-	const userInfo = _checkAuthorizationCookie(context, 'client-panel');
+	const userInfo = _checkAuthorizationCookie(context, '/client-panel', USER_COOKIE);
 	if (!userInfo.error) {
 		return {
 			redirect: {

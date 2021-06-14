@@ -3,7 +3,7 @@ import Link from 'next/link';
 import router from 'next/router';
 import { ProductCard } from '../components/ProductCard';
 import axios from 'axios';
-import { API_URL } from '../constant';
+import { API_URL, USER_COOKIE } from '../constant';
 import {useState} from 'react';
 import { _checkAuthorizationCookie } from 'ftdgomez-utils';
 
@@ -33,7 +33,7 @@ const productos = ({ categories, products, currentPage, currentCategory, keyword
 				!keyword &&
 		<article className='p-4 md:p-0 max-w-6xl mx-auto md:grid grid-cols-3 gap-4'>
 				{products.slice(0, 3).map((item) => (
-					<ProductCard badge='Destacado' product={item} key={item.id}/>
+					<ProductCard badge='Destacado' product={item} key={item.id} buttons={true} />
 				))}
 			</article>
 			}
@@ -84,7 +84,7 @@ const productos = ({ categories, products, currentPage, currentCategory, keyword
 										</div>
 					<div className='col-span-9 md:grid grid-cols-3 gap-4 m-4 md:m-0'>
 						{products.slice(keyword ? 0 : 3, keyword ? products.length : 12).map((item) => (
-							<ProductCard key={item.id} product={item} />
+							<ProductCard key={item.id} product={item} buttons={true} />
 						))}
 						{products.length < 1 && <p className="bg-white border p-4">Oops! parece que no hay productos por aquí.</p>}
 					</div>
@@ -147,7 +147,8 @@ const productos = ({ categories, products, currentPage, currentCategory, keyword
 
 export async function getServerSideProps(context) {
 	try {
-		const userInfo = _checkAuthorizationCookie(context, '/');
+		const userInfo = context.req.cookies[USER_COOKIE] || false;
+		console.log(!userInfo ? 'user is not logged in' : 'user is logged in');
 		const query = context.query
 		const currentPage = query.page ? Number(query.page) : 1;
 		const currentCategory = query.cat || '';

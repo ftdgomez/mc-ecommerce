@@ -102,7 +102,7 @@ export const MainLayout = ({ children, userInfo }) => {
 									</Link>
 								))}
 
-							{/* {userInfo ? 
+							{userInfo ? 
 							<>
 								<Link href="/client-panel">
 										<a className='my-1 lg:text-primary lg:font-bold text-sm block text-gray-700 font-medium hover:text-indigo-500 md:mx-4 md:my-0'>
@@ -121,9 +121,9 @@ export const MainLayout = ({ children, userInfo }) => {
 										<a className='my-1 lg:text-primary lg:font-bold text-sm text-gray-700 font-medium hover:text-indigo-500 md:mx-4 md:my-0'>
 									Registrarse</a></Link>	
 								</>
-							} */}
+							}
 
-							{/* <div className='fixed bottom-0 w-full md:w-auto bg-white left-0 p-4 md:relative md:p-0 flex justify-center border-t md:border-transparent md:justify-center md:block'>
+							<div className='fixed bottom-0 w-full md:w-auto bg-white left-0 p-4 md:relative md:p-0 flex justify-center border-t md:border-transparent md:justify-center md:block'>
 								<button
 									className='relative text-gray-700 hover:text-gray-600 flex items-center justify-center'
 									onClick={() => setShowCart(!showCart)}>
@@ -144,7 +144,7 @@ export const MainLayout = ({ children, userInfo }) => {
 										{productCart.length}
 									</span>
 								</button>
-							</div> */}
+							</div>
 							</div>
 
 						</div>
